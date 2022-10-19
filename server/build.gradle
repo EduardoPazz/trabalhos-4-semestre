@@ -1,0 +1,11 @@
+plugins {
+    id 'application'
+}
+
+application {
+    mainClass = 'org.example.Main'
+}
+
+dependencies {
+    implementation project(':core')
+}
