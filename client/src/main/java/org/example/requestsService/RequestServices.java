@@ -34,12 +34,14 @@ public class RequestServices {
 
     public AuthResponse SendRequestAuth(ServerAddress serverAddress, Auth auth)
     {
-        var responseString = sendRequest(serverAddress, auth.toString()).split(";");
+        var responseString = sendRequest(serverAddress, auth.toString());
+        var responseArr = responseString.split(";");
+
         return new AuthResponse(
-                                responseString[0],
-                                Integer.getInteger(responseString[1]),
-                                responseString[2],
-                                LocalDate.parse(responseString[3])
+                responseArr[0],
+                Integer.getInteger(responseArr[1]),
+                responseArr[2],
+                LocalDate.parse(responseArr[3])
         );
     }
 

@@ -9,20 +9,20 @@ import lombok.Setter;
 public class Auth {
 
     public Auth(
-            String alias,
-            String password
+            String aliasParam,
+            String passwordParam
     )
     {
-        Alias = alias;
-        Password = password;
+        alias = aliasParam;
+        password = passwordParam;
     }
 
-    public String Alias;
-    public String Password;
+    private String alias;
+    private String password;
 
     @Override
     public String toString()
     {
-        return "auth;" + getAlias() + ";" + getPassword();
+        return "auth;" + getAlias() + ";" + getPassword() + "\n";
     }
 }

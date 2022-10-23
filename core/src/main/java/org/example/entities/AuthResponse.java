@@ -29,4 +29,14 @@ public class AuthResponse {
     private String token;
     private LocalDate expiresIn;
 
+
+    @Override
+    public String toString()
+    {
+        int authStatusInt = 1;
+        if(authStatus == AuthStatusEnum.NOT_AUTHENTICATED) authStatusInt = 0;
+
+        return type + ";" + authStatusInt + ";" + token + ";" + expiresIn.toString();
+    }
+
 }

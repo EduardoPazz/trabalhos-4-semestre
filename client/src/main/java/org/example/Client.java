@@ -1,14 +1,29 @@
 package org.example;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import org.example.repositories.ClientRepository;
+import org.example.requestsService.RequestServices;
+import org.example.services.ClientService;
 
 class Client {
 
-  public static void start() {
+
+  public static  void start()
+  {
+    var clientService = new ClientService(new RequestServices(), new ClientRepository());
+    try
+    {
+      clientService.authenticate("vinicius","123");
+    }
+    catch (Exception e)
+    {
+      System.out.println(e.getMessage());
+    }
+
+
+  }
+
+
+ /* public static void start() {
     try (
             Socket socket = new Socket("127.0.0.1", 666);
             BufferedWriter writer = IOHelper.getBufferedWriter(socket.getOutputStream());
@@ -25,5 +40,5 @@ class Client {
     } catch (IOException e) {
       throw new RuntimeException("Cannot create client socket", e);
     }
-  }
+  }*/
 }
