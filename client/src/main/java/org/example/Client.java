@@ -9,13 +9,12 @@ import java.net.UnknownHostException;
 class Client {
 
   public static void start() {
-    try (Socket socket = new Socket("127.0.0.1", 666);
-        BufferedWriter writer = IOHelper.getBufferedWriter(
-            socket.getOutputStream());
-        BufferedReader reader = IOHelper.getBufferedReader(
-            socket.getInputStream())) {
-      System.out.println("Using address " + socket.getInetAddress() + "\t"
-          + socket.getLocalPort());
+    try (
+            Socket socket = new Socket("127.0.0.1", 666);
+            BufferedWriter writer = IOHelper.getBufferedWriter(socket.getOutputStream());
+            BufferedReader reader = IOHelper.getBufferedReader(socket.getInputStream())
+    ) {
+      System.out.println("Using address " + socket.getInetAddress() + "\t" + socket.getLocalPort());
       System.out.println("Requesting");
       writer.write("Hello.java \n");
       writer.flush();

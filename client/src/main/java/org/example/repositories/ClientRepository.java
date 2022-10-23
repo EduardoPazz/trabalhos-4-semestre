@@ -1,20 +1,33 @@
 package org.example.repositories;
 
-import org.example.core.ServerAddress;
+import lombok.Getter;
+import lombok.Setter;
+import org.example.entities.Message;
+import org.example.entities.ServerAddress;
+
+import java.util.List;
 
 public class ClientRepository {
 
+    @Getter
+    private List<Message> receivedMessages;
+
+    @Getter
+    @Setter
+    private String tokenClient;
 
     public ServerAddress GetConectedServer(){
         ServerAddress serverAddress = new ServerAddress();
-        serverAddress.setAddress("1231231232");
+        serverAddress.setAddress("127.0.0.1");
+        serverAddress.setPort(666);
         serverAddress.setDomain("usp.br");
         return serverAddress;
     }
 
-    //TODO:
-    // - Listar Mensagens Recebidas
-    // - Armazenar mensagens Recebidas
-    // - Consultar Serivor Conectado
+
+    public void AddReceivedMessages(List<Message> messages)
+    {
+        receivedMessages.addAll(messages);
+    }
 
 }

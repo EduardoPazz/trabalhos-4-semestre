@@ -1,11 +1,23 @@
 package org.example.services;
 
-import org.example.core.ClientAddress;
-import org.example.core.Message;
-import org.example.core.ServerAddress;
+import org.example.entities.Auth;
+import org.example.entities.ClientAddress;
+import org.example.entities.Message;
+import org.example.entities.ServerAddress;
+import org.example.repositories.ClientRepository;
+import org.example.requestsService.RequestServices;
 
 public class ClientService {
 
+    private final RequestServices _requestService;
+    private final ClientRepository _clientRepository;
+    public ClientService(
+            RequestServices requestServices,
+            ClientRepository clientRepository)
+    {
+        _requestService = requestServices;
+        _clientRepository = clientRepository;
+    }
 
     private ServerAddress hostedServer;
     private ClientAddress clientData;
@@ -25,8 +37,13 @@ public class ClientService {
     }
 
 
-    public void authenticate()
+    public void authenticate(String alias, String password)
     {
+        var auth = new Auth(alias, password);
+        var serverAddress = _clientRepository.GetConectedServer();
+        var authResponse = _requestService.SendRequestAuth(serverAddress, auth);
+        _clientRepository.setTokenClient(authResponse.getToken());
+
         //TODO:
         // - Enviar mensagem de autenticação ao servidor, com usuário e senha
         // - Armazenar o token de comunicação

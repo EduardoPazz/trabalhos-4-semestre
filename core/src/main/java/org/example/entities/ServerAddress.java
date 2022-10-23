@@ -1,4 +1,4 @@
-package org.example.core;
+package org.example.entities;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,5 +7,6 @@ import lombok.Setter;
 @Setter
 public class ServerAddress {
     private String address;
+    private int port;
     private String domain;
 }
