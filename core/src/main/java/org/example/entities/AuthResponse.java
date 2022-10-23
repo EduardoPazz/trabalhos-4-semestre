@@ -4,12 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.enums.AuthStatusEnum;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 
 @Getter
 @Setter
-public class AuthResponse {
+public class AuthResponse implements Serializable {
 
     public AuthResponse(
             String typeParam,

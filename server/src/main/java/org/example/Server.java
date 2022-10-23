@@ -26,6 +26,9 @@ class Server {
                                 new ServerService(
                                         new ServerRepository()
                                 )
+                        ),
+                        new ServerService(
+                                new ServerRepository()
                         )
                 )
         ).start();
