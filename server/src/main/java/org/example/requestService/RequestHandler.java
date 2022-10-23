@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public record  RequestHandler(Socket socket, RequestService _requestService, ServerService _serverService) implements Runnable {
+public record  RequestHandler(Socket socket, ServerService _serverService) implements Runnable {
 
 
     @Override
@@ -22,8 +22,10 @@ public record  RequestHandler(Socket socket, RequestService _requestService, Ser
             System.out.println("Connection opened \n");
             System.out.println("Connection with client " + socket.getInetAddress() + "\t" + socket.getPort() + " established");
 
-            Auth auth = (Auth) inputStream.readObject();
-            var obj = redirect(auth);
+            var objRequest = inputStream.readObject();
+            var obj = redirect(objRequest);
+
+
             outputStream.writeObject(obj);
 
         } catch (IOException e) {

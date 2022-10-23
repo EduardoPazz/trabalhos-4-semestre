@@ -34,8 +34,9 @@ public class Message {
     private String toAlias;
     private String toDomain;
 
-
     private String fromAlias;
+    private String fromDomain;
+
     private String subject;
     private String body;
 

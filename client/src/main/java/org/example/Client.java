@@ -10,6 +10,7 @@ class Client {
   public static  void start()
   {
     var clientService = new ClientService(new RequestServices(), new ClientRepository());
+
     try
     {
       clientService.authenticate("vinicius","123");

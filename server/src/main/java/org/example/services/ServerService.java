@@ -2,6 +2,7 @@ package org.example.services;
 
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
+import org.example.enums.AuthStatusEnum;
 import org.example.repositories.ServerRepository;
 
 import java.time.LocalDate;
@@ -24,8 +25,7 @@ public class ServerService {
         if(clientCredentials == null)
         {
             return new AuthResponse(
-                    "auth",
-                    0,
+                    AuthStatusEnum.NOT_AUTHENTICATED,
                     "",
                     null
             );
@@ -37,8 +37,7 @@ public class ServerService {
         _serverRepository.UpdateTokenClientCredentials(auth.getAlias(),token,expiresDate);
 
         return new AuthResponse(
-                "auth",
-                1,
+                AuthStatusEnum.AUTHENTICATED,
                 token,
                 expiresDate
         );
