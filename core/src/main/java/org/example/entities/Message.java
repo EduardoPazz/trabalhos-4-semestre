@@ -2,6 +2,7 @@ package org.example.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.enums.DeliveryStatusEnum;
 
 import java.time.LocalDate;
 
@@ -38,7 +39,7 @@ public class Message {
     private String subject;
     private String body;
 
-    //private DeliveryStatusEnum deliveryStatus;
+    private DeliveryStatusEnum deliveryStatus;
 
 
 }

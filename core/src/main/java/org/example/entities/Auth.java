@@ -19,4 +19,10 @@ public class Auth {
 
     public String Alias;
     public String Password;
+
+    @Override
+    public String toString()
+    {
+        return "auth;" + getAlias() + ";" + getPassword();
+    }
 }

@@ -1,43 +1,66 @@
 package org.example.requestsService;
 
 import org.example.IOHelper;
-import org.example.entities.Auth;
-import org.example.entities.AuthResponse;
-import org.example.entities.Message;
-import org.example.entities.ServerAddress;
+import org.example.entities.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.time.LocalDate;
 
 public class RequestServices {
 
 
-    public /*SendMessageReponse*/ void SendMessageRequest(ServerAddress serverAddress, Message message)
+    public SendMessageResponse SendMessageRequest(ServerAddress serverAddress, Message message, String token)
     {
+        var sendMessageRequest = "message;"
+                            + token  + ";"
+                            + message.getSendDate().toString() + ";"
+                            + message.getToAlias() + ";"
+                            + message.getToDomain() + ";"
+                            + message.getSubject() + ";"
+                            + message.getBody();
+        var responseString = sendRequest(serverAddress, sendMessageRequest).split(";");
 
+        return new SendMessageResponse(
+                responseString[0],
+                LocalDate.parse(responseString[1]),
+                Integer.getInteger(responseString[2])
+        );
     }
 
+
+
     public AuthResponse SendRequestAuth(ServerAddress serverAddress, Auth auth)
+    {
+        var responseString = sendRequest(serverAddress, auth.toString()).split(";");
+        return new AuthResponse(
+                                responseString[0],
+                                Integer.getInteger(responseString[1]),
+                                responseString[2],
+                                LocalDate.parse(responseString[3])
+        );
+    }
+
+
+
+
+    private String sendRequest(ServerAddress serverAddress, String message)
     {
         try (
                 Socket socket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
                 BufferedWriter writer = IOHelper.getBufferedWriter(socket.getOutputStream());
                 BufferedReader reader = IOHelper.getBufferedReader(socket.getInputStream())
         ) {
-            writer.write("auth|" + auth.getAlias() + "|" + auth.getPassword());
+            writer.write(message);
             writer.flush();
-            String[] response = reader.readLine().split("|");
-            var authReponse = new AuthResponse(response[0], response[1],response[1], LocalDate.parse(response[3]));
-            return authReponse;
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            return reader.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return "";
     }
 
 }
