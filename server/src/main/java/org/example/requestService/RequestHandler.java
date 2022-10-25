@@ -1,6 +1,7 @@
 package org.example.requestService;
 
 import org.example.entities.Auth;
+import org.example.entities.MessagePackage;
 import org.example.services.ServerService;
 
 import java.io.IOException;
@@ -41,6 +42,11 @@ public record  RequestHandler(Socket socket, ServerService _serverService) imple
         if(obj instanceof Auth)
         {
             return _serverService.AuthRequest((Auth) obj);
+        }
+
+        if(obj instanceof MessagePackage)
+        {
+            return _serverService.((MessagePackage) obj);
         }
 
         return null;

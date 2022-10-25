@@ -3,6 +3,7 @@ package org.example.services;
 import org.example.entities.*;
 import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatusEnum;
+import org.example.enums.HostTypeEnum;
 import org.example.exceptions.ClientNotFoundException;
 import org.example.exceptions.NotAuthenticatedException;
 import org.example.repositories.ClientRepository;
@@ -38,7 +39,8 @@ public class ClientService {
         var message = new Message(emailAddressParam, clientAddressData.getAlias(), subjectParam, bodyParam);
         var messagePackage = new MessagePackage(
                 clientAddressData.getToken(),
-                message
+                message,
+                HostTypeEnum.CLIENT
         );
 
         var response = (DeliveryResponse)_requestService.requestServer(serverAddress, messagePackage);
