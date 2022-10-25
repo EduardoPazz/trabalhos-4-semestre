@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.repositories.ServerRepository;
 import org.example.requestService.RequestHandler;
-import org.example.requestService.RequestService;
 import org.example.services.ServerService;
 
 import java.io.IOException;
@@ -22,10 +21,8 @@ class Server {
         new Thread(
                 new RequestHandler(
                         welcomeSocket.accept(),
-                        new RequestService(
-                                new ServerService(
-                                        new ServerRepository()
-                                )
+                        new ServerService(
+                                new ServerRepository()
                         )
                 )
         ).start();

@@ -1,6 +1,7 @@
 package org.example.repositories;
 
 import org.example.entities.ClientAddressCredentials;
+import org.example.entities.ServerAddress;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class ServerRepository {
 
 
     private List<ClientAddressCredentials> clients;
+    private List<ServerAddress> knownServer;
 
     public ServerRepository()
     {
@@ -20,6 +22,8 @@ public class ServerRepository {
                 "vinicius",
                 "123"
         ));
+
+        kownServer = new ArrayList<ServerAddress>();
     }
 
 
@@ -33,6 +37,17 @@ public class ServerRepository {
                 .orElse(null);
 
         return client;
+    }
+
+
+    public ServerAddress getServerAddressByDomain(String domainParam)
+    {
+        var serverAddresses = knownServer.stream()
+                .filter(x -> x.domain == domainParam)
+                .findFirst()
+                .orElse(null);
+
+        return serverAddresses;
     }
 
 

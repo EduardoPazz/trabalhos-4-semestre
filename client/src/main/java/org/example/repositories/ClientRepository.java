@@ -2,6 +2,7 @@ package org.example.repositories;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.entities.ClientAddress;
 import org.example.entities.Message;
 import org.example.entities.ServerAddress;
 
@@ -14,7 +15,7 @@ public class ClientRepository {
 
     @Getter
     @Setter
-    private String tokenClient;
+    private ClientAddress clientAddress;
 
     public ServerAddress GetConectedServer(){
         ServerAddress serverAddress = new ServerAddress();
