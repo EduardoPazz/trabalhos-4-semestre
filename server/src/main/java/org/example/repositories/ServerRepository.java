@@ -1,17 +1,26 @@
 package org.example.repositories;
 
 import org.example.entities.ClientAddressCredentials;
+import org.example.entities.Message;
 import org.example.entities.ServerAddress;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class ServerRepository {
 
 
     private List<ClientAddressCredentials> clients;
     private List<ServerAddress> knownServer;
+
+
+    private Map<String, List<Message>> clientMessagesBox;
+
 
     public ServerRepository()
     {
@@ -24,6 +33,8 @@ public class ServerRepository {
         ));
 
         kownServer = new ArrayList<ServerAddress>();
+
+        clientMessagesBox = new HashMap<>();
     }
 
 
@@ -37,6 +48,32 @@ public class ServerRepository {
                 .orElse(null);
 
         return client;
+    }
+
+
+
+    public List<Message> getMessagesFromClintByPeriod(String alias, LocalDate dateFrom, LocalDate dateTo)
+    {
+        if(!clientMessagesBox.containsKey(alias)){
+            clientMessagesBox.put(alias, new ArrayList<>());
+            return clientMessagesBox.get(alias); //vai retornar vazio
+        }
+
+        var messages = clientMessagesBox.get(alias).stream().filter(
+                x -> x.getSendDate().compareTo(dateFrom) > 0 && x.getSendDate().compareTo(dateTo) < 0
+        ).collect(Collectors.toList());
+
+        return  messages;
+    }
+
+
+    public void addReceivedClientMessage(String alias, Message message)
+    {
+        if(!clientMessagesBox.containsKey(alias)){
+            clientMessagesBox.put(alias, new ArrayList<>());
+        }
+
+        clientMessagesBox.get(alias).add(message);
     }
 
 
