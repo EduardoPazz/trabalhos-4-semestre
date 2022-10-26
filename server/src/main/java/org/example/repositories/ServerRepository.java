@@ -52,7 +52,7 @@ public class ServerRepository {
 
 
 
-    public List<Message> getMessagesFromClintByPeriod(String alias, LocalDate dateFrom, LocalDate dateTo)
+    public List<Message> getMessagesFromClientByPeriod(String alias, LocalDate dateFrom, LocalDate dateTo)
     {
         if(!clientMessagesBox.containsKey(alias)){
             clientMessagesBox.put(alias, new ArrayList<>());
