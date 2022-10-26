@@ -1,67 +1,64 @@
 package org.example.repositories;
 
 import org.example.entities.ClientAddressCredentials;
-import org.example.entities.ServerAddress;
+import org.example.entities.Message;
+import org.example.entities.ServerCredentials;
+import org.example.exceptions.ClientNotFoundException;
+import org.example.exceptions.DomainNotFoundException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ServerRepository {
 
 
-    private List<ClientAddressCredentials> clients;
-    private List<ServerAddress> knownServer;
+    private Map<ClientAddressCredentials, Set<Message>> clientToMessages = new HashMap<>();
+    private ServerCredentials ownCredentials = new ServerCredentials("127.0.0.1", 666, "usp.br");
+    private Set<ServerCredentials> knownServers = new HashSet<>();
 
-    public ServerRepository()
-    {
-        clients = new ArrayList<>();
-        clients.add(new ClientAddressCredentials(
-                "127.0.0.1",
-                666,
-                "vinicius",
-                "123"
-        ));
-
-        kownServer = new ArrayList<ServerAddress>();
+    public ServerRepository() {
+        clientToMessages.put(new ClientAddressCredentials("127.0.0.1", 666, "vinicius", "123"), new HashSet<>());
     }
 
-
-    public ClientAddressCredentials getByAliasAndPassword(String alias, String password)
-    {
-        var client = clients.stream()
-                .filter(
-                        x -> x.getAlias().equals(alias)
-                                && x.getPassword().equals(password)
-                ).findFirst()
-                .orElse(null);
-
-        return client;
+    public void storeMessage(String alias, Message message) throws ClientNotFoundException {
+        getClientMessagesByAlias(alias).add(message);
     }
 
-
-    public ServerAddress getServerAddressByDomain(String domainParam)
-    {
-        var serverAddresses = knownServer.stream()
-                .filter(x -> x.domain == domainParam)
+    private Set<Message> getClientMessagesByAlias(String alias) throws ClientNotFoundException {
+        return clientToMessages.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().getAlias().equals(alias))
                 .findFirst()
-                .orElse(null);
-
-        return serverAddresses;
+                .orElseThrow(() -> new ClientNotFoundException(alias))
+                .getValue();
     }
 
-
-    public void UpdateTokenClientCredentials(String alias, String token, LocalDate expiresDate)
-    {
-        var client = clients.stream()
-                .filter(
-                        x -> x.getAlias().equals(alias)
-                ).findFirst()
+    public ClientAddressCredentials getClientByAliasAndPassword(String alias, String password) {
+        return clientToMessages.keySet().stream()
+                .filter(client -> client.getAlias().equals(alias) && client.getPassword().equals(password))
+                .findFirst()
                 .get();
-
-        client.setToken(token);
-        client.setExpiresTokenIn(expiresDate);
     }
 
+
+    public ServerCredentials getServerByDomain(String domain) throws DomainNotFoundException {
+        return knownServers.stream().filter(server -> server.domain().equals(domain)).findFirst().orElseThrow(() -> new DomainNotFoundException(domain));
+    }
+
+
+    public void updateTokenClientCredentials(String alias, String token, LocalDate expiresDate) {
+        var outdatedClient =
+                clientToMessages.keySet().stream().filter(client -> client.getAlias().equals(alias)).findFirst().get();
+
+        outdatedClient.setToken(token);
+        outdatedClient.setExpiresTokenIn(expiresDate);
+    }
+
+    public String getOwnDomain() {
+        return ownCredentials.domain();
+    }
 
 }

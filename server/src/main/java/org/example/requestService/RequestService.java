@@ -1,6 +1,6 @@
 package org.example.requestService;
 
-import org.example.entities.ServerAddress;
+import org.example.entities.ServerCredentials;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,23 +9,19 @@ import java.net.Socket;
 
 public class RequestService {
 
-    public Object requestServer(ServerAddress serverAddress, Object objRequest)
-    {
+    public static Object requestServer(ServerCredentials server, Object payload) {
         Object response = null;
-        try {
-            Socket socket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
+        try (Socket socket = new Socket(server.address(), server.port());
+             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+        ) {
 
-            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-
-            outputStream.writeObject(objRequest);
+            outputStream.writeObject(payload);
             response = inputStream.readObject();
 
-            return response;
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;

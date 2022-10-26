@@ -2,44 +2,29 @@ package org.example.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.enums.DeliveryStatusEnum;
+import org.example.enums.DeliveryStatus;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
-public class SendMessageResponse
-{
-    public SendMessageResponse(
-            String typeParam,
-            LocalDate responseDate,
-            int deliveryStatusParam
-    )
-    {
+public class SendMessageResponse {
+    private String type;
+    private LocalDate UTCDate;
+    private DeliveryStatus status;
+
+    public SendMessageResponse(String typeParam, LocalDate responseDate, int deliveryStatusParam) {
         type = typeParam;
         UTCDate = responseDate;
         status = getDeliveryStatusByInt(deliveryStatusParam);
     }
 
-    private String type;
-    private LocalDate UTCDate;
-    private DeliveryStatusEnum status;
-
-
-
-    private DeliveryStatusEnum getDeliveryStatusByInt(int value)
-    {
-        if(value == 0) {
-            return DeliveryStatusEnum.SUCCESS;
-        }
-        if(value == 1) {
-            return DeliveryStatusEnum.UNKNOW_DOMAIN;
-        }
-        if(value == 2) {
-            return DeliveryStatusEnum.UNKNOW_CLIENT;
-        }
-
-        return DeliveryStatusEnum.NOT_AUTHENTICATED;
+    private DeliveryStatus getDeliveryStatusByInt(int value) {
+        return switch (value) {
+            case 0 -> DeliveryStatus.SUCCESS;
+            case 1 -> DeliveryStatus.UNKNOWN_DOMAIN;
+            case 2 -> DeliveryStatus.UNKNOWN_CLIENT;
+            default -> DeliveryStatus.NOT_AUTHENTICATED;
+        };
     }
-
 }
