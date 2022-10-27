@@ -9,72 +9,40 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public record  RequestHandler(Socket socket, ServerService _serverService) implements Runnable {
+public record RequestHandler(Socket socket, ServerService serverService) implements Runnable {
 
 
     @Override
     public void run() {
-        try (
-                socket;
-                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-        )
-        {
-            System.out.println("Connection opened \n");
-            System.out.println("Connection with client " + socket.getInetAddress() + "\t" + socket.getPort() + " established");
+        try (socket;
+             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 
-            var objRequest = inputStream.readObject();
-            var obj = redirect(objRequest);
+            System.out.println(
+                    "Connection with host " + socket.getInetAddress() + "\t" + socket.getPort() + " established");
 
+            Object objRequest = inputStream.readObject();
+            Object obj = redirect(objRequest);
 
             outputStream.writeObject(obj);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Ending connection with host " + socket.getInetAddress() + "\t" + socket.getPort());
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
 
-    private Object redirect(Object obj)
-    {
-        if(obj instanceof Auth)
-        {
-            return _serverService.AuthRequest((Auth) obj);
+    private Object redirect(Object payload) {
+        if (payload instanceof Auth) {
+            return serverService.authRequest((Auth) payload);
         }
 
-        if(obj instanceof MessagePackage)
-        {
-            return _serverService.((MessagePackage) obj);
+        if (payload instanceof MessagePackage) {
+            return serverService.receiveMessageRedirect((MessagePackage) payload);
         }
 
         return null;
     }
 
-/*    @Override
-    public void run() {
-        try (
-                socket;
-                BufferedWriter writer = IOHelper.getBufferedWriter(socket.getOutputStream());
-                BufferedReader reader = IOHelper.getBufferedReader(socket.getInputStream())
-        )
-        {
-            System.out.println("Connection opened \n");
-            System.out.println("Connection with client " + socket.getInetAddress() + "\t" + socket.getPort() + " established");
-            String request = reader.readLine();
-            System.out.println(request + "\n");
-
-            String response = _requestService.handleRequestMessage(request) + "\n";
-            System.out.println("response: " + response + "\n");
-
-            writer.write(response);
-            writer.flush();
-
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage() + "\n");
-            throw new RuntimeException(e);
-        }
-    }
- */
 }

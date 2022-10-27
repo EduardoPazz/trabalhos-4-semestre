@@ -1,31 +1,18 @@
 package org.example.entities;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.example.enums.DeliveryStatusEnum;
-import org.example.enums.RequestTypeEnum;
+import org.example.enums.DeliveryStatus;
 
 import java.time.LocalDate;
 
 @Getter
-@Setter
-public class DeliveryResponse
-{
-    public DeliveryResponse(){
-
-    }
-
-    public DeliveryResponse(
-            DeliveryStatusEnum statusParam
-    )
-    {
-        type = RequestTypeEnum.DELIVERY;
-        date = LocalDate.now();
-        status = statusParam;
-    }
-
-    private DeliveryStatusEnum status;
+public class DeliveryResponse {
+    private DeliveryStatus status;
     private LocalDate date;
-    private RequestTypeEnum type;
+
+    public DeliveryResponse(DeliveryStatus status) {
+        date = LocalDate.now();
+        this.status = status;
+    }
 
 }

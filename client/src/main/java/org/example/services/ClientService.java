@@ -1,8 +1,14 @@
 package org.example.services;
 
-import org.example.entities.*;
+import org.example.entities.Auth;
+import org.example.entities.AuthResponse;
+import org.example.entities.ClientAddress;
+import org.example.entities.DeliveryResponse;
+import org.example.entities.Message;
+import org.example.entities.MessagePackage;
+import org.example.entities.ServerCredentials;
 import org.example.enums.AuthStatusEnum;
-import org.example.enums.DeliveryStatusEnum;
+import org.example.enums.DeliveryStatus;
 import org.example.enums.HostTypeEnum;
 import org.example.exceptions.ClientNotFoundException;
 import org.example.exceptions.NotAuthenticatedException;
@@ -11,81 +17,60 @@ import org.example.requestsService.RequestServices;
 
 public class ClientService {
 
-    private final RequestServices _requestService;
-    private final ClientRepository _clientRepository;
-    public ClientService(
-            RequestServices requestServices,
-            ClientRepository clientRepository)
-    {
-        _requestService = requestServices;
-        _clientRepository = clientRepository;
-    }
-
-    private ServerAddress hostedServer;
+    private final RequestServices requestServices;
+    private final ClientRepository clientRepository;
+    private ServerCredentials hostedServer;
     private ClientAddress clientData;
 
+    public ClientService(RequestServices requestService, ClientRepository clientRepository) {
+        requestServices = requestService;
+        this.clientRepository = clientRepository;
+    }
+
+    public void sendMessage(String emailAddressParam, String subjectParam,
+                            String bodyParam) throws ClientNotFoundException, NotAuthenticatedException {
 
 
-    public void sendMessage(
-            String emailAddressParam,
-            String subjectParam,
-            String bodyParam
-    ) throws ClientNotFoundException, NotAuthenticatedException {
-
-
-        var clientAddressData = _clientRepository.getClientAddress();
-        var serverAddress = _clientRepository.GetConectedServer();
+        var clientAddressData = clientRepository.getClientAddress();
+        var serverAddress = clientRepository.getConnectedServer();
 
         var message = new Message(emailAddressParam, clientAddressData.getAlias(), subjectParam, bodyParam);
-        var messagePackage = new MessagePackage(
-                clientAddressData.getToken(),
-                message,
-                HostTypeEnum.CLIENT
-        );
+        var messagePackage = new MessagePackage(HostTypeEnum.CLIENT, clientAddressData.getToken(), message);
 
-        var response = (DeliveryResponse)_requestService.requestServer(serverAddress, messagePackage);
+        var response = (DeliveryResponse) requestServices.requestServer(serverAddress, messagePackage);
 
         /*var sendMessageResponse = _requestService.SendMessageRequest(serverAddress, message, token); */
 
-        if(response.getStatus() == DeliveryStatusEnum.UNKNOW_CLIENT)
-        {
+        if (response.getStatus() == DeliveryStatus.UNKNOWN_CLIENT) {
             throw new ClientNotFoundException("Cliente não encontrado!");
         }
 
-        if(response.getStatus() == DeliveryStatusEnum.UNKNOW_DOMAIN)
-        {
+        if (response.getStatus() == DeliveryStatus.UNKNOWN_DOMAIN) {
             throw new ClientNotFoundException("Domínio não encontrado!");
         }
 
-        if(response.getStatus() == DeliveryStatusEnum.NOT_AUTHENTICATED)
-        {
+        if (response.getStatus() == DeliveryStatus.NOT_AUTHENTICATED) {
             throw new NotAuthenticatedException("Não autenticado! Sessão expirou!");
         }
     }
 
-    public void receiveMessage()
-    {
+    public void receiveMessage() {
         //TODO:
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
         // - Armazenar isso no repositório (BD) do cliente
     }
 
 
-    public void authenticate(String alias, String password) throws NotAuthenticatedException
-    {
+    public void authenticate(String alias, String password) throws NotAuthenticatedException {
         var auth = new Auth(alias, password);
-        var serverAddress = _clientRepository.GetConectedServer();
-        var authResponse = (AuthResponse)_requestService.requestServer(serverAddress, auth);
+        var serverAddress = clientRepository.getConnectedServer();
+        var authResponse = (AuthResponse) requestServices.requestServer(serverAddress, auth);
 
-        if(authResponse.getAuthStatus() == AuthStatusEnum.AUTHENTICATED){
-            var clientAdress = new ClientAddress(
-                    alias,
-                    "usp.br",
-                    authResponse.getToken()
-            );
+        if (authResponse.getAuthStatus() == AuthStatusEnum.AUTHENTICATED) {
+            var clientAdress = new ClientAddress(alias, "usp.br", authResponse.getToken());
 
-            _clientRepository.setClientAddress(clientAdress);
-        }else{
+            clientRepository.setClientAddress(clientAdress);
+        } else {
             throw new NotAuthenticatedException("Falha ao autenticar, verifique suas credenciais!");
         }
     }
