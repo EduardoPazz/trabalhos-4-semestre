@@ -1,6 +1,5 @@
 package org.example.repositories;
 
-import lombok.AllArgsConstructor;
 import org.example.entities.ClientAddressCredentials;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
@@ -13,20 +12,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 public class ServerRepository {
 
 
-    private ServerCredentials ownCredentials;
-    private Set<ServerCredentials> knownServers;
-    private Map<ClientAddressCredentials, Set<Message>> clientToMessages;
+    private final ServerCredentials ownCredentials;
+    private final Set<ServerCredentials> knownServers;
+    private final Map<ClientAddressCredentials, Set<Message>> clientToMessages;
 
     public ServerRepository(ServerCredentials ownCredentials, Set<ServerCredentials> knownServers,
                             Set<ClientAddressCredentials> clients) {
         this.ownCredentials = ownCredentials;
         this.knownServers = knownServers;
-        this.clientToMessages = clients.stream()
-                .collect(Collectors.toMap(client -> client, client -> new HashSet<>()));
+        this.clientToMessages = clients.stream().collect(Collectors.toMap(client -> client, client -> new HashSet<>()));
     }
 
     public void storeMessage(String alias, Message message) throws ClientNotFoundException {
@@ -60,9 +57,12 @@ public class ServerRepository {
     }
 
 
-    public void updateTokenClientCredentials(String alias, String token, LocalDate expiresDate) {
-        ClientAddressCredentials outdatedClient =
-                clientToMessages.keySet().stream().filter(client -> client.getAlias().equals(alias)).findFirst().get();
+    public void updateTokenClientCredentials(String alias, String token, LocalDate expiresDate) throws ClientNotFoundException {
+        ClientAddressCredentials outdatedClient = clientToMessages.keySet()
+                .stream()
+                .filter(client -> client.getAlias().equals(alias))
+                .findFirst()
+                .orElseThrow(() -> new ClientNotFoundException(alias));
 
         outdatedClient.setToken(token);
         outdatedClient.setExpiresTokenIn(expiresDate);

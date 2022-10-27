@@ -36,7 +36,11 @@ public class ServerService {
         String token = "ABC1234";
         var expiresDate = LocalDate.now().plusDays(1);
 
-        serverRepository.updateTokenClientCredentials(auth.getAlias(), token, expiresDate);
+        try {
+            serverRepository.updateTokenClientCredentials(auth.getAlias(), token, expiresDate);
+        } catch (ClientNotFoundException e) {
+            return new AuthResponse(AuthStatusEnum.NOT_AUTHENTICATED, "", null);
+        }
 
         return new AuthResponse(AuthStatusEnum.AUTHENTICATED, token, expiresDate);
     }
