@@ -54,12 +54,7 @@ public class ServerService {
         String recipientAlias = message.getToAlias();
 
         if (recipientDomain.equals(serverRepository.getOwnDomain())) {
-            try {
-                serverRepository.storeMessage(recipientAlias, message);
-                return new DeliveryResponse(DeliveryStatus.SUCCESS);
-            } catch (ClientNotFoundException e) {
-                return new DeliveryResponse(DeliveryStatus.UNKNOWN_CLIENT);
-            }
+            return storeMessageIfPossibleAndGetDeliveryResponse(message, recipientAlias);
         }
 
         try {
@@ -72,11 +67,30 @@ public class ServerService {
 
 
     private DeliveryResponse receiveMessageFromServer(MessagePackage messagePackage) {
+        Message message = messagePackage.message();
+
+        String recipientDomain = message.getToDomain();
+        String recipientAlias = message.getToAlias();
+
+        if (!recipientDomain.equals(serverRepository.getOwnDomain())) {
+            return new DeliveryResponse(DeliveryStatus.UNKNOWN_DOMAIN);
+        }
+
+        return storeMessageIfPossibleAndGetDeliveryResponse(message, recipientAlias);
 
         //TODO:
         // - Como reconhecer o servidor?
         // - Vai fazer alguns passos de identificação de servidor?
         // - Pensar em uma forma de apresentação de servodor, casos os mesmos não sejam conhecidos ainda
+    }
+
+    private DeliveryResponse storeMessageIfPossibleAndGetDeliveryResponse(Message message, String recipientAlias) {
+        try {
+            serverRepository.storeMessage(recipientAlias, message);
+            return new DeliveryResponse(DeliveryStatus.SUCCESS);
+        } catch (ClientNotFoundException e) {
+            return new DeliveryResponse(DeliveryStatus.UNKNOWN_CLIENT);
+        }
     }
 
 
