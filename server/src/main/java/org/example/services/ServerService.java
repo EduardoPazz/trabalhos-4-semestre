@@ -2,6 +2,7 @@ package org.example.services;
 
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
+import org.example.entities.ClientAddressCredentials;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
@@ -25,9 +26,10 @@ public class ServerService {
 
     // TODO: implement real authentication
     public AuthResponse authRequest(Auth auth) {
-        var clientCredentials = serverRepository.getClientByAliasAndPassword(auth.getAlias(), auth.getPassword());
-
-        if (clientCredentials == null) {
+        ClientAddressCredentials clientCredentials = null;
+        try {
+            clientCredentials = serverRepository.getClientByAliasAndPassword(auth.getAlias(), auth.getPassword());
+        } catch (ClientNotFoundException e) {
             return new AuthResponse(AuthStatusEnum.NOT_AUTHENTICATED, "", null);
         }
 
