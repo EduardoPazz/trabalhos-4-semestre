@@ -1,5 +1,8 @@
 package org.example.services;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
 import org.example.entities.ClientAddress;
@@ -14,6 +17,7 @@ import org.example.exceptions.ClientNotFoundException;
 import org.example.exceptions.NotAuthenticatedException;
 import org.example.repositories.ClientRepository;
 import org.example.requestsService.RequestServices;
+import org.example.entities.MessageListRequisition;
 
 public class ClientService {
 
@@ -54,10 +58,15 @@ public class ClientService {
         }
     }
 
-    public void receiveMessage() {
+    public void receiveMessage(String alias, LocalDate dateFrom, LocalDate dateTo) throws ClientNotFoundException {
         //TODO:
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
+        var MessageListRequisition = new MessageListRequisition(alias, dateFrom, dateTo);
+        List<Message> messages = (clientMessagesBox) requestServices.requestServer(hostedServer, MessageListRequisition);
+
+        
         // - Armazenar isso no repositório (BD) do cliente
+        clientRepository.storeMessages(messages);
     }
 
 
