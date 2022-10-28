@@ -11,6 +11,7 @@ import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatus;
 import org.example.enums.HostTypeEnum;
 import org.example.exceptions.ClientNotFoundException;
+import org.example.exceptions.DomainNotFoundException;
 import org.example.exceptions.NotAuthenticatedException;
 import org.example.repositories.ClientRepository;
 import org.example.requestsService.RequestServices;
@@ -32,14 +33,17 @@ public class ClientService {
 
 
         var clientAddressData = clientRepository.getClientAddress();
-        var serverAddress = clientRepository.getConnectedServer();
+        ServerCredentials serverAddress = null;
+        try {
+            serverAddress = clientRepository.getConnectedServer(clientAddressData.getDomain());
+        } catch (DomainNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
         var message = new Message(emailAddressParam, clientAddressData.getAlias(), subjectParam, bodyParam);
         var messagePackage = new MessagePackage(HostTypeEnum.CLIENT, clientAddressData.getToken(), message);
 
         var response = (DeliveryResponse) requestServices.requestServer(serverAddress, messagePackage);
-
-        /*var sendMessageResponse = _requestService.SendMessageRequest(serverAddress, message, token); */
 
         if (response.getStatus() == DeliveryStatus.UNKNOWN_CLIENT) {
             throw new ClientNotFoundException("Cliente não encontrado!");
@@ -61,9 +65,15 @@ public class ClientService {
     }
 
 
-    public void authenticate(String alias, String password) throws NotAuthenticatedException {
+    public void authenticate(String domain, String alias, String password) throws NotAuthenticatedException {
         var auth = new Auth(alias, password);
-        var serverAddress = clientRepository.getConnectedServer();
+        ServerCredentials serverAddress = null;
+        try {
+            serverAddress = clientRepository.getConnectedServer(domain);
+        } catch (DomainNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         var authResponse = (AuthResponse) requestServices.requestServer(serverAddress, auth);
 
         if (authResponse.getAuthStatus() == AuthStatusEnum.AUTHENTICATED) {

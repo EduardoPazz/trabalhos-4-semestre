@@ -25,7 +25,8 @@ public class ServerService {
     }
 
     // TODO: implement real authentication
-    public AuthResponse authRequest(Auth auth) {
+    public AuthResponse authRequest(Auth auth)
+    {
         ClientAddressCredentials clientCredentials = null;
         try {
             clientCredentials = serverRepository.getClientByAliasAndPassword(auth.getAlias(), auth.getPassword());
