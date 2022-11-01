@@ -61,7 +61,7 @@ public class ClientService {
     public void receiveMessage() {
         //TODO:
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
-        // - Armazenar isso no repositório (BD) do cliente
+        // - Armazenar isso no repositório do cliente
     }
 
 

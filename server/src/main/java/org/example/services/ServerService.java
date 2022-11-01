@@ -6,6 +6,7 @@ import org.example.entities.ClientAddressCredentials;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
+import org.example.entities.ReceiveClientMessageRequestPackage;
 import org.example.entities.ServerCredentials;
 import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatus;
@@ -23,6 +24,9 @@ public class ServerService {
     public ServerService(ServerRepository serverRepository) {
         this.serverRepository = serverRepository;
     }
+
+
+
 
     // TODO: implement real authentication
     public AuthResponse authRequest(Auth auth)
@@ -47,12 +51,18 @@ public class ServerService {
     }
 
 
+
+
+
     public DeliveryResponse receiveMessageRedirect(MessagePackage message) {
         return switch (message.hostType()) {
             case CLIENT -> sendMessageFromClient(message);
             case SERVER -> receiveMessageFromServer(message);
         };
     }
+
+
+
 
     private DeliveryResponse sendMessageFromClient(MessagePackage messagePackage) {
         Message message = messagePackage.message();
@@ -73,6 +83,8 @@ public class ServerService {
     }
 
 
+
+
     private DeliveryResponse receiveMessageFromServer(MessagePackage messagePackage) {
         Message message = messagePackage.message();
 
@@ -91,6 +103,8 @@ public class ServerService {
         // - Pensar em uma forma de apresentação de servodor, casos os mesmos não sejam conhecidos ainda
     }
 
+
+
     private DeliveryResponse storeMessageIfPossibleAndGetDeliveryResponse(Message message, String recipientAlias) {
         try {
             serverRepository.storeMessage(recipientAlias, message);
@@ -98,6 +112,16 @@ public class ServerService {
         } catch (ClientNotFoundException e) {
             return new DeliveryResponse(DeliveryStatus.UNKNOWN_CLIENT);
         }
+    }
+
+
+
+    private ReceiveClientMessageRequestPackage receiveClientMessageRequest(ReceiveClientMessageRequestPackage request)
+    {
+        //TODO:
+        // - Filtrar os dados de mensagens do cliente pelo período
+        // - Montar o pacote de resposta
+        // - Retornar resposta ao cliente
     }
 
 
