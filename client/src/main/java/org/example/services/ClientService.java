@@ -1,11 +1,17 @@
 package org.example.services;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.spi.LocaleServiceProvider;
+
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
 import org.example.entities.ClientAddress;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
+import org.example.entities.ReceiveClientMessageResponsePackage;
 import org.example.entities.ServerCredentials;
 import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatus;
@@ -58,10 +64,16 @@ public class ClientService {
         }
     }
 
-    public void receiveMessage() {
+    public void receiveMessage(LocalDate dateFrom, LocalDate dateTo) {
         //TODO:
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
         // - Armazenar isso no repositório do cliente
+    
+        List<Message> messages = new ArrayList<Message>();
+        var MessageRequest = new ReceiveClientMessageResponsePackage(clientData, dateFrom, dateTo, messages);
+        var response = (ReceiveClientMessageResponsePackage) requestServices.requestServer(hostedServer, MessageRequest);
+
+        clientRepository.saveMessages(response.getMessages());
     }
 
 

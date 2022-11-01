@@ -6,6 +6,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.example.enums.DeliveryStatus;
+
 public class ReceiveClientMessageResponsePackage {
 
     public ReceiveClientMessageResponsePackage(
@@ -33,4 +35,5 @@ public class ReceiveClientMessageResponsePackage {
 
     @Getter
     private List<Message> messages;
+    
 }

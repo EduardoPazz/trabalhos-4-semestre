@@ -7,6 +7,7 @@ import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
 import org.example.exceptions.DomainNotFoundException;
 
+import java.util.List;
 import java.util.Set;
 
 public class ClientRepository {
@@ -33,8 +34,7 @@ public class ClientRepository {
         return serverCredentials;
     }
 
-
-    public void addReceivedMessages(Set<Message> messages) {
+    public void saveMessages(List<Message> messages) {
         receivedMessages.addAll(messages);
     }
 
