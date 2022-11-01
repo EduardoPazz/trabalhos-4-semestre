@@ -14,7 +14,7 @@ public class ClientRepository {
 
     @Getter
     private Set<Message> receivedMessages;
-    
+
     @Getter
     @Setter
     private ClientAddress clientAddress;
@@ -29,9 +29,12 @@ public class ClientRepository {
     }
 
 
-    public void storeMessages(Message message) {
+    public void storeMessages(List<Message> message) {
         database_connection db= new database_connection();
-        db.addMessage(message);
+
+        for (Message m : message) {
+            db.addMessage(m);
+        }
     }
 
 }
