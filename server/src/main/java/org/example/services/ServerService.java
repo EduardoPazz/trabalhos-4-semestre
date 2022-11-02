@@ -2,11 +2,13 @@ package org.example.services;
 
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
+import org.example.entities.ClientAddress;
 import org.example.entities.ClientAddressCredentials;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
 import org.example.entities.ReceiveClientMessageRequestPackage;
+import org.example.entities.ReceiveClientMessageResponsePackage;
 import org.example.entities.ServerCredentials;
 import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatus;
@@ -116,8 +118,22 @@ public class ServerService {
 
 
 
-    private ReceiveClientMessageRequestPackage receiveClientMessageRequest(ReceiveClientMessageRequestPackage request)
+    public ReceiveClientMessageResponsePackage receiveClientMessageRequest(ReceiveClientMessageRequestPackage request)
     {
+
+        ReceiveClientMessageResponsePackage response = null;
+        ClientAddress clientAddress = request.getClientAddress();
+        LocalDate dateFrom = request.getDateFrom();
+        LocalDate dateTo = request.getDateTo();
+
+        response = new ReceiveClientMessageResponsePackage(
+                clientAddress,
+                dateFrom,
+                dateTo,
+                serverRepository.getMessagesByClientAddressAndDateRange(clientAddress, dateFrom, dateTo)
+        );
+
+        return response;
         //TODO:
         // - Filtrar os dados de mensagens do cliente pelo período
         // - Montar o pacote de resposta

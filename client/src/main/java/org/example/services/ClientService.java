@@ -12,6 +12,7 @@ import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
 import org.example.entities.ReceiveClientMessageResponsePackage;
+import org.example.entities.ReceiveClientMessageRequestPackage;
 import org.example.entities.ServerCredentials;
 import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatus;
@@ -69,8 +70,9 @@ public class ClientService {
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
         // - Armazenar isso no repositório do cliente
     
-        List<Message> messages = new ArrayList<Message>();
-        var MessageRequest = new ReceiveClientMessageResponsePackage(clientData, dateFrom, dateTo, messages);
+        var clientAddressData = clientRepository.getClientAddress();
+
+        var MessageRequest = new ReceiveClientMessageRequestPackage(clientAddressData, dateFrom, dateTo);
         var response = (ReceiveClientMessageResponsePackage) requestServices.requestServer(hostedServer, MessageRequest);
 
         clientRepository.saveMessages(response.getMessages());

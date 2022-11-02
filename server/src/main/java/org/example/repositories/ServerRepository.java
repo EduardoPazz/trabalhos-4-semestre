@@ -1,5 +1,6 @@
 package org.example.repositories;
 
+import org.example.entities.ClientAddress;
 import org.example.entities.ClientAddressCredentials;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
@@ -8,6 +9,7 @@ import org.example.exceptions.DomainNotFoundException;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,6 +72,25 @@ public class ServerRepository {
 
     public String getOwnDomain() {
         return ownCredentials.domain();
+    }
+
+    public List<Message> getMessagesByClientAddressAndDateRange(ClientAddress clientAddress, LocalDate dateFrom,
+            LocalDate dateTo) {
+        try {
+            return clientToMessages.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getKey().getAlias().equals(clientAddress.getAlias()))
+                    .findFirst()
+                    .orElseThrow(() -> new ClientNotFoundException(clientAddress.getAlias()))
+                    .getValue()
+                    .stream()
+                    .filter(message -> message.getSendDate().isAfter(dateFrom) && message.getSendDate().isBefore(dateTo))
+                    .collect(Collectors.toList());
+        } catch (ClientNotFoundException e) {
+            
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
