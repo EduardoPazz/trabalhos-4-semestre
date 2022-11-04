@@ -40,7 +40,7 @@ public record RequestHandler(Socket socket, ServerService serverService) impleme
         }
 
         if (payload instanceof MessagePackage) {
-            return serverService.receiveMessageRedirect((MessagePackage) payload);
+            return serverService.receiveMessage((MessagePackage) payload);
         }
 
         if (payload instanceof ReceiveClientMessageRequestPackage) {

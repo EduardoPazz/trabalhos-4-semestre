@@ -28,11 +28,8 @@ public class ServerService {
     }
 
 
-
-
     // TODO: implement real authentication
-    public AuthResponse authRequest(Auth auth)
-    {
+    public AuthResponse authRequest(Auth auth) {
         ClientAddressCredentials clientCredentials = null;
         try {
             clientCredentials = serverRepository.getClientByAliasAndPassword(auth.getAlias(), auth.getPassword());
@@ -53,18 +50,12 @@ public class ServerService {
     }
 
 
-
-
-
-    public DeliveryResponse receiveMessageRedirect(MessagePackage message) {
+    public DeliveryResponse receiveMessage(MessagePackage message) {
         return switch (message.hostType()) {
             case CLIENT -> sendMessageFromClient(message);
             case SERVER -> receiveMessageFromServer(message);
         };
     }
-
-
-
 
     private DeliveryResponse sendMessageFromClient(MessagePackage messagePackage) {
         Message message = messagePackage.message();
@@ -83,8 +74,6 @@ public class ServerService {
             return new DeliveryResponse(DeliveryStatus.UNKNOWN_DOMAIN);
         }
     }
-
-
 
 
     private DeliveryResponse receiveMessageFromServer(MessagePackage messagePackage) {
@@ -106,7 +95,6 @@ public class ServerService {
     }
 
 
-
     private DeliveryResponse storeMessageIfPossibleAndGetDeliveryResponse(Message message, String recipientAlias) {
         try {
             serverRepository.storeMessage(recipientAlias, message);
@@ -117,21 +105,16 @@ public class ServerService {
     }
 
 
+    public ReceiveClientMessageResponsePackage receiveClientMessageRequest(ReceiveClientMessageRequestPackage request) {
 
-    public ReceiveClientMessageResponsePackage receiveClientMessageRequest(ReceiveClientMessageRequestPackage request)
-    {
-
-        ReceiveClientMessageResponsePackage response = null;
+        ReceiveClientMessageResponsePackage response;
         ClientAddress clientAddress = request.getClientAddress();
         LocalDate dateFrom = request.getDateFrom();
         LocalDate dateTo = request.getDateTo();
 
-        response = new ReceiveClientMessageResponsePackage(
-                clientAddress,
-                dateFrom,
-                dateTo,
-                serverRepository.getMessagesByClientAddressAndDateRange(clientAddress, dateFrom, dateTo)
-        );
+        response = new ReceiveClientMessageResponsePackage(clientAddress, dateFrom, dateTo,
+                                                           serverRepository.getMessagesByClientAddressAndDateRange(
+                                                                   clientAddress, dateFrom, dateTo));
 
         return response;
         //TODO:
