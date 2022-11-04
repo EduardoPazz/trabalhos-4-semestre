@@ -1,6 +1,9 @@
 package org.example.services;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.spi.LocaleServiceProvider;
@@ -22,6 +25,7 @@ import org.example.exceptions.DomainNotFoundException;
 import org.example.exceptions.NotAuthenticatedException;
 import org.example.repositories.ClientRepository;
 import org.example.requestsService.RequestServices;
+import org.example.entities.MessageListRequisition;
 
 public class ClientService {
 
@@ -65,17 +69,23 @@ public class ClientService {
         }
     }
 
-    public void receiveMessage(LocalDate dateFrom, LocalDate dateTo) {
+    public void receiveMessage(String alias, LocalDate dateFrom, LocalDate dateTo) throws ClientNotFoundException {
         //TODO:
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
         // - Armazenar isso no repositório do cliente
-    
+
         var clientAddressData = clientRepository.getClientAddress();
 
         var MessageRequest = new ReceiveClientMessageRequestPackage(clientAddressData, dateFrom, dateTo);
         var response = (ReceiveClientMessageResponsePackage) requestServices.requestServer(hostedServer, MessageRequest);
 
         clientRepository.saveMessages(response.getMessages());
+        var MessageListRequisition = new MessageListRequisition(alias, dateFrom, dateTo);
+        List<Message> messages = (clientMessagesBox) requestServices.requestServer(hostedServer, MessageListRequisition);
+
+
+        // - Armazenar isso no repositório (BD) do cliente
+        clientRepository.storeMessages(messages);
     }
 
 
