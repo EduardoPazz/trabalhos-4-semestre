@@ -2,9 +2,13 @@ package org.example.services;
 
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
+import org.example.entities.ClientAddress;
+import org.example.entities.ClientAddressCredentials;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
+import org.example.entities.ReceiveClientMessageRequestPackage;
+import org.example.entities.ReceiveClientMessageResponsePackage;
 import org.example.entities.ServerCredentials;
 import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatus;
@@ -23,21 +27,33 @@ public class ServerService {
         this.serverRepository = serverRepository;
     }
 
-    // TODO: implement real authentication
-    public AuthResponse authRequest(Auth auth) {
-        var clientCredentials = serverRepository.getClientByAliasAndPassword(auth.getAlias(), auth.getPassword());
 
-        if (clientCredentials == null) {
+
+
+    // TODO: implement real authentication
+    public AuthResponse authRequest(Auth auth)
+    {
+        ClientAddressCredentials clientCredentials = null;
+        try {
+            clientCredentials = serverRepository.getClientByAliasAndPassword(auth.getAlias(), auth.getPassword());
+        } catch (ClientNotFoundException e) {
             return new AuthResponse(AuthStatusEnum.NOT_AUTHENTICATED, "", null);
         }
 
         String token = "ABC1234";
         var expiresDate = LocalDate.now().plusDays(1);
 
-        serverRepository.updateTokenClientCredentials(auth.getAlias(), token, expiresDate);
+        try {
+            serverRepository.updateTokenClientCredentials(auth.getAlias(), token, expiresDate);
+        } catch (ClientNotFoundException e) {
+            return new AuthResponse(AuthStatusEnum.NOT_AUTHENTICATED, "", null);
+        }
 
         return new AuthResponse(AuthStatusEnum.AUTHENTICATED, token, expiresDate);
     }
+
+
+
 
 
     public DeliveryResponse receiveMessageRedirect(MessagePackage message) {
@@ -46,6 +62,9 @@ public class ServerService {
             case SERVER -> receiveMessageFromServer(message);
         };
     }
+
+
+
 
     private DeliveryResponse sendMessageFromClient(MessagePackage messagePackage) {
         Message message = messagePackage.message();
@@ -66,6 +85,8 @@ public class ServerService {
     }
 
 
+
+
     private DeliveryResponse receiveMessageFromServer(MessagePackage messagePackage) {
         Message message = messagePackage.message();
 
@@ -84,6 +105,8 @@ public class ServerService {
         // - Pensar em uma forma de apresentação de servodor, casos os mesmos não sejam conhecidos ainda
     }
 
+
+
     private DeliveryResponse storeMessageIfPossibleAndGetDeliveryResponse(Message message, String recipientAlias) {
         try {
             serverRepository.storeMessage(recipientAlias, message);
@@ -91,6 +114,30 @@ public class ServerService {
         } catch (ClientNotFoundException e) {
             return new DeliveryResponse(DeliveryStatus.UNKNOWN_CLIENT);
         }
+    }
+
+
+
+    public ReceiveClientMessageResponsePackage receiveClientMessageRequest(ReceiveClientMessageRequestPackage request)
+    {
+
+        ReceiveClientMessageResponsePackage response = null;
+        ClientAddress clientAddress = request.getClientAddress();
+        LocalDate dateFrom = request.getDateFrom();
+        LocalDate dateTo = request.getDateTo();
+
+        response = new ReceiveClientMessageResponsePackage(
+                clientAddress,
+                dateFrom,
+                dateTo,
+                serverRepository.getMessagesByClientAddressAndDateRange(clientAddress, dateFrom, dateTo)
+        );
+
+        return response;
+        //TODO:
+        // - Filtrar os dados de mensagens do cliente pelo período
+        // - Montar o pacote de resposta
+        // - Retornar resposta ao cliente
     }
 
 

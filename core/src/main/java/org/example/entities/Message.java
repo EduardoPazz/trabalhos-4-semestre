@@ -5,10 +5,11 @@ import lombok.Setter;
 import org.example.enums.DeliveryStatus;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 @Getter
 @Setter
-public class Message {
+public class Message implements Comparable<Message> {
 
     private LocalDate sendDate;
     private String toAlias;
@@ -30,5 +31,12 @@ public class Message {
         body = bodyParam;
 
         sendDate = LocalDate.now();
+    }
+
+    @Override
+    public int compareTo(Message m) {
+        if(this.getSendDate().isBefore(m.getSendDate())) return -1;
+        if(this.getSendDate().isAfter(m.getSendDate())) return 1;
+        return 0;
     }
 }

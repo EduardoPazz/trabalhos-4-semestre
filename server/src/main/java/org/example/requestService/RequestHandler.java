@@ -2,6 +2,7 @@ package org.example.requestService;
 
 import org.example.entities.Auth;
 import org.example.entities.MessagePackage;
+import org.example.entities.ReceiveClientMessageRequestPackage;
 import org.example.services.ServerService;
 
 import java.io.IOException;
@@ -40,6 +41,10 @@ public record RequestHandler(Socket socket, ServerService serverService) impleme
 
         if (payload instanceof MessagePackage) {
             return serverService.receiveMessageRedirect((MessagePackage) payload);
+        }
+
+        if (payload instanceof ReceiveClientMessageRequestPackage) {
+            return serverService.receiveClientMessageRequest((ReceiveClientMessageRequestPackage) payload);
         }
 
         return null;
