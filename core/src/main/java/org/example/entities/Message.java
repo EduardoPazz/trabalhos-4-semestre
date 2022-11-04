@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.enums.DeliveryStatus;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Comparator;
 
 @Getter
 @Setter
-public class Message implements Comparable<Message> {
+public class Message implements Comparable<Message>, Serializable {
 
     private LocalDate sendDate;
     private String toAlias;
@@ -20,8 +20,9 @@ public class Message implements Comparable<Message> {
     private String body;
     private DeliveryStatus deliveryStatus;
 
-    public Message(String emailAddressParam, String fromAliasParam, String subjectParam, String bodyParam) {
-        String[] emailAddressArr = emailAddressParam.split("@");
+    public Message(final String emailAddressParam, final String fromAliasParam, final String subjectParam,
+            final String bodyParam) {
+        final String[] emailAddressArr = emailAddressParam.split("@");
 
         toAlias = emailAddressArr[0];
         toDomain = emailAddressArr[1];
@@ -34,9 +35,9 @@ public class Message implements Comparable<Message> {
     }
 
     @Override
-    public int compareTo(Message m) {
-        if(this.getSendDate().isBefore(m.getSendDate())) return -1;
-        if(this.getSendDate().isAfter(m.getSendDate())) return 1;
+    public int compareTo(final Message m) {
+        if (this.getSendDate().isBefore(m.getSendDate())) return -1;
+        if (this.getSendDate().isAfter(m.getSendDate())) return 1;
         return 0;
     }
 }

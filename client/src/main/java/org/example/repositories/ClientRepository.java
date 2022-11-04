@@ -2,47 +2,30 @@ package org.example.repositories;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.entities.ClientAddress;
+import org.example.entities.ClientCredentials;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
-import org.example.exceptions.DomainNotFoundException;
-import org.example.repositories.*;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ClientRepository {
 
-    public ClientRepository() {
-        serverCredentialsSet.add(new ServerCredentials("127.0.0.1", 666, "usp.br"));
-    }
-
     @Getter
-    private Set<Message> receivedMessages;
-    private Set<ServerCredentials> serverCredentialsSet;
-
-
+    private final Set<Message> receivedMessages = new HashSet<>();
+    @Getter
+    private final ServerCredentials serverCredentials;
     @Getter
     @Setter
-    private ClientAddress clientAddress;
+    private ClientCredentials clientCredentials;
 
-    public ServerCredentials getConnectedServer(String domain) throws DomainNotFoundException {
 
-        var serverCredentials = serverCredentialsSet.stream().filter(
-                x -> x.domain().equals(domain)
-        ).findFirst().orElseThrow(() -> new DomainNotFoundException("Domínio não encontrado"));
-
-        return serverCredentials;
+    public ClientRepository(final ServerCredentials serverCredentials) {
+        this.serverCredentials = serverCredentials;
     }
 
-    public void saveMessages(List<Message> messages) {
+    public void storeMessages(final Collection<Message> messages) {
         receivedMessages.addAll(messages);
     }
-
-
-    public void storeMessages(Message message) {
-        database_connection db= new database_connection();
-        db.addMessage(message);
-    }
-
 }

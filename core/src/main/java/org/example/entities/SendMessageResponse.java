@@ -13,13 +13,13 @@ public class SendMessageResponse {
     private LocalDate UTCDate;
     private DeliveryStatus status;
 
-    public SendMessageResponse(String typeParam, LocalDate responseDate, int deliveryStatusParam) {
+    public SendMessageResponse(final String typeParam, final LocalDate responseDate, final int deliveryStatusParam) {
         type = typeParam;
         UTCDate = responseDate;
         status = getDeliveryStatusByInt(deliveryStatusParam);
     }
 
-    private DeliveryStatus getDeliveryStatusByInt(int value) {
+    private DeliveryStatus getDeliveryStatusByInt(final int value) {
         return switch (value) {
             case 0 -> DeliveryStatus.SUCCESS;
             case 1 -> DeliveryStatus.UNKNOWN_DOMAIN;

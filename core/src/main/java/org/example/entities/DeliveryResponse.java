@@ -7,10 +7,10 @@ import java.time.LocalDate;
 
 @Getter
 public class DeliveryResponse {
-    private DeliveryStatus status;
-    private LocalDate date;
+    private final DeliveryStatus status;
+    private final LocalDate date;
 
-    public DeliveryResponse(DeliveryStatus status) {
+    public DeliveryResponse(final DeliveryStatus status) {
         date = LocalDate.now();
         this.status = status;
     }

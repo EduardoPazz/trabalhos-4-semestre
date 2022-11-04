@@ -16,25 +16,25 @@ public record RequestHandler(Socket socket, ServerService serverService) impleme
     @Override
     public void run() {
         try (socket;
-             ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
+             final ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+             final ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 
             System.out.println(
                     "Connection with host " + socket.getInetAddress() + "\t" + socket.getPort() + " established");
 
-            Object requestPayload = inputStream.readObject();
-            Object responsePayload = reducePayload(requestPayload);
+            final Object requestPayload = inputStream.readObject();
+            final Object responsePayload = reducePayload(requestPayload);
 
             outputStream.writeObject(responsePayload);
 
             System.out.println("Ending connection with host " + socket.getInetAddress() + "\t" + socket.getPort());
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (final IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    private Object reducePayload(Object payload) {
+    private Object reducePayload(final Object payload) {
         if (payload instanceof Auth) {
             return serverService.authRequest((Auth) payload);
         }
