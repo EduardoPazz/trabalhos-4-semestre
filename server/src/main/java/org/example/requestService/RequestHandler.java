@@ -22,10 +22,10 @@ public record RequestHandler(Socket socket, ServerService serverService) impleme
             System.out.println(
                     "Connection with host " + socket.getInetAddress() + "\t" + socket.getPort() + " established");
 
-            Object objRequest = inputStream.readObject();
-            Object obj = redirect(objRequest);
+            Object requestPayload = inputStream.readObject();
+            Object responsePayload = reducePayload(requestPayload);
 
-            outputStream.writeObject(obj);
+            outputStream.writeObject(responsePayload);
 
             System.out.println("Ending connection with host " + socket.getInetAddress() + "\t" + socket.getPort());
         } catch (IOException | ClassNotFoundException e) {
@@ -34,7 +34,7 @@ public record RequestHandler(Socket socket, ServerService serverService) impleme
     }
 
 
-    private Object redirect(Object payload) {
+    private Object reducePayload(Object payload) {
         if (payload instanceof Auth) {
             return serverService.authRequest((Auth) payload);
         }
