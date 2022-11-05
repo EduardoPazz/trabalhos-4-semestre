@@ -2,8 +2,8 @@ package org.example.services;
 
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
-import org.example.entities.ClientCredentials;
 import org.example.entities.ClientAddressCredentials;
+import org.example.entities.ClientCredentials;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
@@ -27,7 +27,6 @@ public class ServerService {
         this.serverRepository = serverRepository;
     }
 
-
     // TODO: implement real authentication
     public AuthResponse authRequest(final Auth auth) {
         ClientAddressCredentials clientCredentials = null;
@@ -48,7 +47,6 @@ public class ServerService {
 
         return new AuthResponse(AuthStatusEnum.AUTHENTICATED, token, expiresDate);
     }
-
 
     public DeliveryResponse receiveMessage(final MessagePackage message) {
         return switch (message.hostType()) {
@@ -75,7 +73,6 @@ public class ServerService {
         }
     }
 
-
     private DeliveryResponse receiveMessageFromServer(final MessagePackage messagePackage) {
         final Message message = messagePackage.message();
 
@@ -94,7 +91,6 @@ public class ServerService {
         // - Pensar em uma forma de apresentação de servodor, casos os mesmos não sejam conhecidos ainda
     }
 
-
     private DeliveryResponse storeMessageIfPossibleAndGetDeliveryResponse(final Message message,
             final String recipientAlias) {
         try {
@@ -105,25 +101,15 @@ public class ServerService {
         }
     }
 
-
     public ReceiveClientMessageResponsePackage receiveClientMessageRequest(
             final ReceiveClientMessageRequestPackage request) {
 
-        final ReceiveClientMessageResponsePackage response;
         final ClientCredentials clientCredentials = request.getClientAddress();
         final LocalDate dateFrom = request.getDateFrom();
         final LocalDate dateTo = request.getDateTo();
 
-        response = new ReceiveClientMessageResponsePackage(clientCredentials, dateFrom, dateTo,
-                                                           serverRepository.getMessagesByClientAddressAndDateRange(
-                                                                   clientCredentials, dateFrom, dateTo));
-
-        return response;
-        //TODO:
-        // - Filtrar os dados de mensagens do cliente pelo período
-        // - Montar o pacote de resposta
-        // - Retornar resposta ao cliente
+        return new ReceiveClientMessageResponsePackage(clientCredentials, dateFrom, dateTo,
+                                                       serverRepository.getMessagesByClientAddressAndDateRange(
+                                                               clientCredentials, dateFrom, dateTo));
     }
-
-
 }

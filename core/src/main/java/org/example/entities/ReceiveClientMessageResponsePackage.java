@@ -3,10 +3,11 @@ package org.example.entities;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ReceiveClientMessageResponsePackage {
+public class ReceiveClientMessageResponsePackage implements Serializable {
 
     @Getter
     private final LocalDate dateFrom;

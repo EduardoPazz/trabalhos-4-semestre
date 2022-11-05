@@ -1,15 +1,7 @@
 package org.example.entities;
 
-import lombok.Getter;
+import java.io.Serializable;
 
-@Getter
-public class ClientCredentials {
+public record ClientCredentials(String username, String token) implements Serializable {
 
-
-    private final String username;
-    private final String token;
-    public ClientCredentials(final String username, final String token) {
-        this.username = username;
-        this.token = token;
-    }
 }

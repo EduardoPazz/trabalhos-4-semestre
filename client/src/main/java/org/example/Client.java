@@ -13,23 +13,31 @@ import org.example.services.ClientService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Client {
 
-    @Getter
-    private ArrayList<Message> messages;
-
+    private static final ServerCredentials mockedServerUsp = new ServerCredentials("localhost", 666, "usp.br");
+    private static final ServerCredentials mockedServerUnesp = new ServerCredentials("localhost", 777, "unesp.br");
+    private static final ServerCredentials mockedServerUnicamp = new ServerCredentials("localhost", 888, "unicamp.br");
 
     public static void main(String[] args) {
-        ServerCredentials mockedServerUsp = new ServerCredentials("localhost", 666, "usp.br");
-        new Client().start(mockedServerUsp);
+        final String configuration = args[0];
+
+        ServerCredentials mockedServer = switch (configuration) {
+            case "1" -> mockedServerUsp;
+            case "2" -> mockedServerUnesp;
+            default -> throw new RuntimeException();
+        };
+
+        new Client().start(mockedServer);
     }
 
     public void start(final ServerCredentials serverCredentials) {
         final ClientRepository clientRepository = new ClientRepository(serverCredentials);
         final var clientService = new ClientService(new RequestServices(), clientRepository);
-        final ArrayList<Message> messages = new Client().getMessages();
 
         try (final Scanner scanner = new Scanner(System.in)) {
 
@@ -47,9 +55,9 @@ public class Client {
             while (true) {
                 System.out.println("""
                                            **********FUNCIONALIDADES**********
-                                                                                      
+
                                            (Digite uma das opções abaixo)
-                                                                                      
+
                                            [1] Enviar e-mail
                                            [2] Visualizar e-mails
                                            [Q] Sair
@@ -77,11 +85,16 @@ public class Client {
                     case "2" -> {
                         System.out.println("Buscando mensagens...");
 
+                        List<Message> messages = new ArrayList<>(clientRepository.getReceivedMessages());
+                        messages.sort(Message::compareTo);
+
                         clientRepository.storeMessages(messages);
 
-                        messages.sort(Message::compareTo);
-                        final LocalDate dateFrom = messages.get(messages.size() - 1).getSendDate();
-                        clientService.receiveMessage("", dateFrom, LocalDate.now());
+
+//                        final LocalDate dateFrom = messages.get(messages.size() - 1).getSendDate();
+                        final LocalDate dateFrom = LocalDate.now().minusDays(10);
+
+                        clientService.receiveMessage(dateFrom, LocalDate.now());
 
                         System.out.println("E-mail(s):\n---------------------------");
                         for (int i = 0; i < messages.size() - 1; i++) {

@@ -80,9 +80,9 @@ public class ServerRepository {
         try {
             return clientToMessages.entrySet()
                     .stream()
-                    .filter(entry -> entry.getKey().getAlias().equals(clientCredentials.getUsername()))
+                    .filter(entry -> entry.getKey().getAlias().equals(clientCredentials.username()))
                     .findFirst()
-                    .orElseThrow(() -> new ClientNotFoundException(clientCredentials.getUsername()))
+                    .orElseThrow(() -> new ClientNotFoundException(clientCredentials.username()))
                     .getValue()
                     .stream()
                     .filter(message -> message.getSendDate().isAfter(dateFrom) && message.getSendDate()

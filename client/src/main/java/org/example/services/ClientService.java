@@ -5,7 +5,6 @@ import org.example.entities.AuthResponse;
 import org.example.entities.ClientCredentials;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
-import org.example.entities.MessageListRequisition;
 import org.example.entities.MessagePackage;
 import org.example.entities.ReceiveClientMessageRequestPackage;
 import org.example.entities.ReceiveClientMessageResponsePackage;
@@ -21,7 +20,6 @@ import org.example.requestsService.RequestServices;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
 
 public class ClientService {
 
@@ -41,9 +39,9 @@ public class ClientService {
         final ClientCredentials clientCredentials = clientRepository.getClientCredentials();
         final ServerCredentials serverAddress = clientRepository.getServerCredentials();
 
-        final Message message = new Message(recipientEmail, clientCredentials.getUsername(), subject, body);
+        final Message message = new Message(recipientEmail, clientCredentials.username(), subject, body);
         final MessagePackage messagePackage =
-                new MessagePackage(HostTypeEnum.CLIENT, clientCredentials.getToken(), message);
+                new MessagePackage(HostTypeEnum.CLIENT, clientCredentials.token(), message);
 
         final DeliveryResponse response =
                 (DeliveryResponse) requestServices.requestServer(serverAddress, messagePackage);
@@ -61,25 +59,20 @@ public class ClientService {
         }
     }
 
-    public void receiveMessage(final String alias, final LocalDate dateFrom,
+    public void receiveMessage(final LocalDate dateFrom,
             final LocalDate dateTo) throws ClientNotFoundException, IOException, ClassNotFoundException {
         //TODO:
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
         // - Armazenar isso no repositório do cliente
 
         final var clientAddressData = clientRepository.getClientCredentials();
+        ServerCredentials serverCredentials = clientRepository.getServerCredentials();
 
-        final var MessageRequest = new ReceiveClientMessageRequestPackage(clientAddressData, dateFrom, dateTo);
+        final var messageRequest = new ReceiveClientMessageRequestPackage(clientAddressData, dateFrom, dateTo);
         final var response =
-                (ReceiveClientMessageResponsePackage) requestServices.requestServer(hostedServer, MessageRequest);
+                (ReceiveClientMessageResponsePackage) requestServices.requestServer(serverCredentials, messageRequest);
 
         clientRepository.storeMessages(response.getMessages());
-        final var MessageListRequisition = new MessageListRequisition(alias, dateFrom, dateTo);
-        final List<Message> messages =
-                (List<Message>) requestServices.requestServer(hostedServer, MessageListRequisition);
-
-        // - Armazenar isso no repositório (BD) do cliente
-        clientRepository.storeMessages(messages);
     }
 
     public void authenticate(final String username,

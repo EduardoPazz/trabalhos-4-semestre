@@ -22,8 +22,19 @@ class Server {
             new ClientAddressCredentials("localhost", 50001, "JB", "hentai");
     private Logger logger;
     public static void main(final String[] args) {
-        new Server().start(mockedServerUsp, Set.of(mockedServerUnesp, mockedServerUnicamp),
-                           Set.of(mockedClientEdu, mockedClientVini, mockedClientJB));
+        final String configuration = args[0];
+
+        switch (configuration) {
+            case "1" -> {
+                new Server().start(mockedServerUsp, Set.of(mockedServerUnesp, mockedServerUnicamp),
+                                   Set.of(mockedClientEdu, mockedClientJB));
+            }
+
+            case "2" -> {
+                new Server().start(mockedServerUnesp, Set.of(mockedServerUsp, mockedServerUnicamp),
+                                   Set.of(mockedClientVini));
+            }
+        }
     }
 
     void start(final ServerCredentials ownCredentials, final Set<ServerCredentials> knownServers,
