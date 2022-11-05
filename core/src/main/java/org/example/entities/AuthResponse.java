@@ -6,7 +6,7 @@ import org.example.enums.AuthStatusEnum;
 import org.example.enums.RequestTypeEnum;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,8 +15,10 @@ public class AuthResponse implements Serializable {
     private RequestTypeEnum type;
     private AuthStatusEnum authStatus;
     private String token;
-    private LocalDate expiresIn;
-    public AuthResponse(final AuthStatusEnum authStatusParam, final String tokenParam, final LocalDate expiresInParam) {
+    private LocalDateTime expiresIn;
+
+
+    public AuthResponse(final AuthStatusEnum authStatusParam, final String tokenParam, final LocalDateTime expiresInParam) {
         type = RequestTypeEnum.AUTH;
         authStatus = authStatusParam;
         expiresIn = expiresInParam;

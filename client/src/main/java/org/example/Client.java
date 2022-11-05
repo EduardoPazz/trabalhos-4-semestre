@@ -1,6 +1,5 @@
 package org.example;
 
-import lombok.Getter;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
 import org.example.exceptions.ClientNotFoundException;
@@ -11,11 +10,10 @@ import org.example.requestsService.RequestServices;
 import org.example.services.ClientService;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Client {
 
@@ -44,7 +42,7 @@ public class Client {
             System.out.println("Bem vindo ao cliente de email " + serverCredentials.domain() + "!");
 
             login(clientService, scanner);
-            clearTerminal();
+//            clearTerminal();
 
             /*
              *  TODO:
@@ -85,19 +83,17 @@ public class Client {
                     case "2" -> {
                         System.out.println("Buscando mensagens...");
 
-                        List<Message> messages = new ArrayList<>(clientRepository.getReceivedMessages());
-                        messages.sort(Message::compareTo);
-
-                        clientRepository.storeMessages(messages);
-
-
 //                        final LocalDate dateFrom = messages.get(messages.size() - 1).getSendDate();
-                        final LocalDate dateFrom = LocalDate.now().minusDays(10);
+                        List<Message> messages = clientRepository.getReceivedMessages();
 
-                        clientService.receiveMessage(dateFrom, LocalDate.now());
+                        final LocalDateTime dateFrom = messages.size() == 0 ? LocalDateTime.of(1982, Month.JANUARY, 1, 1,1) : messages.get(messages.size() - 1).getSendDate();
+
+                        clientService.receiveMessage(dateFrom, LocalDateTime.now());
+
+                        messages = clientRepository.getReceivedMessages();
 
                         System.out.println("E-mail(s):\n---------------------------");
-                        for (int i = 0; i < messages.size() - 1; i++) {
+                        for (int i = 0; i < messages.size(); i++) {
                             System.out.println("[" + i + "] - " + messages.get(i).getSubject());
                         }
                         System.out.println("---------------------------\n\nSelecione uma das mensagens: ");
@@ -105,7 +101,7 @@ public class Client {
                             final String nMessage = scanner.nextLine();
                             if (nMessage.equals("Q") || nMessage.equals("q")) break;
                             boolean isNumber = false;
-                            for (int i = 0; i < messages.size() - 1; i++) {
+                            for (int i = 0; i < messages.size(); i++) {
                                 if (nMessage.equals(Integer.toString(i))) {
                                     isNumber = true;
                                     break;

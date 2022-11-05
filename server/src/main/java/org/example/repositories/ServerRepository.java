@@ -7,7 +7,7 @@ import org.example.entities.ServerCredentials;
 import org.example.exceptions.ClientNotFoundException;
 import org.example.exceptions.DomainNotFoundException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class ServerRepository {
 
 
     public void updateTokenClientCredentials(final String alias, final String token,
-            final LocalDate expiresDate) throws ClientNotFoundException {
+            final LocalDateTime expiresDate) throws ClientNotFoundException {
         final ClientAddressCredentials outdatedClient = clientToMessages.keySet()
                 .stream()
                 .filter(client -> client.getAlias().equals(alias))
@@ -76,7 +76,7 @@ public class ServerRepository {
     }
 
     public List<Message> getMessagesByClientAddressAndDateRange(final ClientCredentials clientCredentials,
-            final LocalDate dateFrom, final LocalDate dateTo) {
+            final LocalDateTime dateFrom, final LocalDateTime dateTo) {
         try {
             return clientToMessages.entrySet()
                     .stream()
@@ -85,9 +85,15 @@ public class ServerRepository {
                     .orElseThrow(() -> new ClientNotFoundException(clientCredentials.username()))
                     .getValue()
                     .stream()
-                    .filter(message -> message.getSendDate().isAfter(dateFrom) && message.getSendDate()
-                            .isBefore(dateTo))
-                    .collect(Collectors.toList());
+                    .filter(message -> (
+                                    message.getSendDate().isAfter(dateFrom) ||
+                                    message.getSendDate().isEqual(dateFrom)
+                            ) &&
+                            (
+                                    message.getSendDate().isBefore(dateTo) ||
+                                    message.getSendDate().isEqual(dateTo)
+                            )
+                    ).collect(Collectors.toList());
         } catch (final ClientNotFoundException e) {
 
             e.printStackTrace();

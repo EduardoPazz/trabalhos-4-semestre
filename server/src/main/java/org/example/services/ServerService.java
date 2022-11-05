@@ -17,7 +17,7 @@ import org.example.exceptions.DomainNotFoundException;
 import org.example.repositories.ServerRepository;
 import org.example.requestService.RequestService;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ServerService {
 
@@ -37,7 +37,7 @@ public class ServerService {
         }
 
         final String token = "ABC1234";
-        final var expiresDate = LocalDate.now().plusDays(1);
+        final var expiresDate = LocalDateTime.now().plusDays(1);
 
         try {
             serverRepository.updateTokenClientCredentials(auth.getAlias(), token, expiresDate);
@@ -105,8 +105,8 @@ public class ServerService {
             final ReceiveClientMessageRequestPackage request) {
 
         final ClientCredentials clientCredentials = request.getClientAddress();
-        final LocalDate dateFrom = request.getDateFrom();
-        final LocalDate dateTo = request.getDateTo();
+        final LocalDateTime dateFrom = request.getDateFrom();
+        final LocalDateTime dateTo = request.getDateTo();
 
         return new ReceiveClientMessageResponsePackage(clientCredentials, dateFrom, dateTo,
                                                        serverRepository.getMessagesByClientAddressAndDateRange(

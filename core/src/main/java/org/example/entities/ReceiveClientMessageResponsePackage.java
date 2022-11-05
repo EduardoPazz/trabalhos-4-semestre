@@ -4,22 +4,22 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReceiveClientMessageResponsePackage implements Serializable {
 
     @Getter
-    private final LocalDate dateFrom;
+    private final LocalDateTime dateFrom;
     @Getter
-    private final LocalDate dateTo;
+    private final LocalDateTime dateTo;
     @Getter
     private final List<Message> messages;
     @Setter
     private ClientCredentials clientCredentials;
 
-    public ReceiveClientMessageResponsePackage(final ClientCredentials clientCredentialsParam, final LocalDate dateFromParam,
-            final LocalDate dateToParam, final List<Message> messagesParam) {
+    public ReceiveClientMessageResponsePackage(final ClientCredentials clientCredentialsParam, final LocalDateTime dateFromParam,
+            final LocalDateTime dateToParam, final List<Message> messagesParam) {
         clientCredentials = clientCredentialsParam;
         dateFrom = dateFromParam;
         dateTo = dateToParam;

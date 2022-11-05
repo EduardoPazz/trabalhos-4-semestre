@@ -21,6 +21,8 @@ class Server {
     private static final ClientAddressCredentials mockedClientJB =
             new ClientAddressCredentials("localhost", 50001, "JB", "hentai");
     private Logger logger;
+
+
     public static void main(final String[] args) {
         final String configuration = args[0];
 
