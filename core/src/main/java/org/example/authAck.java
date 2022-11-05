@@ -5,27 +5,26 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import org.example.IOHelper;
 
 public class authAck {
-    private String type;
-    private String alias;
-    private String password;
+    private final String type;
+    private final String alias;
+    private final String password;
 
-    public authAck(String type, String alias, String password) {
+    public authAck(final String type, final String alias, final String password) {
         this.type = type;
         this.alias = alias;
         this.password = password;
     }
 
     public void receiveAuthRequest() {
-        try (ServerSocket welcomeSocket = new ServerSocket(666)) {
+        try (final ServerSocket welcomeSocket = new ServerSocket(666)) {
             System.out.println("Server on");
             while (true) {
                 new Thread(new RequestHandler(welcomeSocket.accept())).start();
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("Cannot create welcome socket", e);
         }
     }
@@ -35,23 +34,19 @@ public class authAck {
         @Override
         public void run() {
             try (socket;
-                BufferedWriter writer = IOHelper.getBufferedWriter(
-                    socket.getOutputStream());
-                BufferedReader reader = IOHelper.getBufferedReader(
-                    socket.getInputStream())) {
+                 final BufferedWriter writer = IOHelper.getBufferedWriter(socket.getOutputStream());
+                 final BufferedReader reader = IOHelper.getBufferedReader(socket.getInputStream())) {
 
                 System.out.println(
-                    "Connection with client " + socket.getInetAddress()
-                        + "\t" + socket.getPort() + " established");
+                        "Connection with client " + socket.getInetAddress() + "\t" + socket.getPort() + " established");
 
-                String clientAliasString = reader.readLine().split(" ")[1];
-                String clientPasswordString = reader.readLine().split(" ")[2];
+                final String clientAliasString = reader.readLine().split(" ")[1];
+                final String clientPasswordString = reader.readLine().split(" ")[2];
 
                 System.out.println(
-                    "Connection with client " + socket.getInetAddress()
-                        + "\t" + socket.getPort() + " closed");
+                        "Connection with client " + socket.getInetAddress() + "\t" + socket.getPort() + " closed");
 
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new RuntimeException(e);
             }
         }

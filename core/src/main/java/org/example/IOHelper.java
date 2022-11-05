@@ -7,13 +7,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-public class IOHelper {
+public enum IOHelper {
+    ;
 
-    public static BufferedReader getBufferedReader(InputStream is) {
+    public static BufferedReader getBufferedReader(final InputStream is) {
         return new BufferedReader(new InputStreamReader(is));
     }
 
-    public static BufferedWriter getBufferedWriter(OutputStream is) {
+    public static BufferedWriter getBufferedWriter(final OutputStream is) {
         return new BufferedWriter(new OutputStreamWriter(is));
     }
 

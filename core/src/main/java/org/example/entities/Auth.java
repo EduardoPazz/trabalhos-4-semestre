@@ -10,21 +10,16 @@ import java.io.Serializable;
 @Setter
 public class Auth implements Serializable {
 
-    public Auth(
-            String aliasParam,
-            String passwordParam
-    )
-    {
+    private String alias;
+    private String password;
+
+    public Auth(final String aliasParam, final String passwordParam) {
         alias = aliasParam;
         password = passwordParam;
     }
 
-    private String alias;
-    private String password;
-
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "auth;" + getAlias() + ";" + getPassword() + "\n";
     }
 }

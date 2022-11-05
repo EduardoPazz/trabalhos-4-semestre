@@ -1,6 +1,6 @@
 package org.example.repositories;
 
-import org.example.entities.ClientAddress;
+import org.example.entities.ClientCredentials;
 import org.example.entities.ClientAddressCredentials;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
@@ -21,18 +21,18 @@ public class ServerRepository {
     private final Set<ServerCredentials> knownServers;
     private final Map<ClientAddressCredentials, Set<Message>> clientToMessages;
 
-    public ServerRepository(ServerCredentials ownCredentials, Set<ServerCredentials> knownServers,
-                            Set<ClientAddressCredentials> clients) {
+    public ServerRepository(final ServerCredentials ownCredentials, final Set<ServerCredentials> knownServers,
+            final Set<ClientAddressCredentials> clients) {
         this.ownCredentials = ownCredentials;
         this.knownServers = knownServers;
         this.clientToMessages = clients.stream().collect(Collectors.toMap(client -> client, client -> new HashSet<>()));
     }
 
-    public void storeMessage(String alias, Message message) throws ClientNotFoundException {
+    public void storeMessage(final String alias, final Message message) throws ClientNotFoundException {
         getClientMessagesByAlias(alias).add(message);
     }
 
-    private Set<Message> getClientMessagesByAlias(String alias) throws ClientNotFoundException {
+    private Set<Message> getClientMessagesByAlias(final String alias) throws ClientNotFoundException {
         return clientToMessages.entrySet()
                 .stream()
                 .filter(entry -> entry.getKey().getAlias().equals(alias))
@@ -41,8 +41,8 @@ public class ServerRepository {
                 .getValue();
     }
 
-    public ClientAddressCredentials getClientByAliasAndPassword(String alias,
-                                                                String password) throws ClientNotFoundException {
+    public ClientAddressCredentials getClientByAliasAndPassword(final String alias,
+            final String password) throws ClientNotFoundException {
         return clientToMessages.keySet()
                 .stream()
                 .filter(client -> client.getAlias().equals(alias) && client.getPassword().equals(password))
@@ -51,7 +51,7 @@ public class ServerRepository {
     }
 
 
-    public ServerCredentials getServerByDomain(String domain) throws DomainNotFoundException {
+    public ServerCredentials getServerByDomain(final String domain) throws DomainNotFoundException {
         return knownServers.stream()
                 .filter(server -> server.domain().equals(domain))
                 .findFirst()
@@ -59,8 +59,9 @@ public class ServerRepository {
     }
 
 
-    public void updateTokenClientCredentials(String alias, String token, LocalDate expiresDate) throws ClientNotFoundException {
-        ClientAddressCredentials outdatedClient = clientToMessages.keySet()
+    public void updateTokenClientCredentials(final String alias, final String token,
+            final LocalDate expiresDate) throws ClientNotFoundException {
+        final ClientAddressCredentials outdatedClient = clientToMessages.keySet()
                 .stream()
                 .filter(client -> client.getAlias().equals(alias))
                 .findFirst()
@@ -74,20 +75,21 @@ public class ServerRepository {
         return ownCredentials.domain();
     }
 
-    public List<Message> getMessagesByClientAddressAndDateRange(ClientAddress clientAddress, LocalDate dateFrom,
-            LocalDate dateTo) {
+    public List<Message> getMessagesByClientAddressAndDateRange(final ClientCredentials clientCredentials,
+            final LocalDate dateFrom, final LocalDate dateTo) {
         try {
             return clientToMessages.entrySet()
                     .stream()
-                    .filter(entry -> entry.getKey().getAlias().equals(clientAddress.getAlias()))
+                    .filter(entry -> entry.getKey().getAlias().equals(clientCredentials.username()))
                     .findFirst()
-                    .orElseThrow(() -> new ClientNotFoundException(clientAddress.getAlias()))
+                    .orElseThrow(() -> new ClientNotFoundException(clientCredentials.username()))
                     .getValue()
                     .stream()
-                    .filter(message -> message.getSendDate().isAfter(dateFrom) && message.getSendDate().isBefore(dateTo))
+                    .filter(message -> message.getSendDate().isAfter(dateFrom) && message.getSendDate()
+                            .isBefore(dateTo))
                     .collect(Collectors.toList());
-        } catch (ClientNotFoundException e) {
-            
+        } catch (final ClientNotFoundException e) {
+
             e.printStackTrace();
         }
         return null;

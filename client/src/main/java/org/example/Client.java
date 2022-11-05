@@ -2,145 +2,169 @@ package org.example;
 
 import lombok.Getter;
 import org.example.entities.Message;
+import org.example.entities.ServerCredentials;
+import org.example.exceptions.ClientNotFoundException;
+import org.example.exceptions.DomainNotFoundException;
+import org.example.exceptions.NotAuthenticatedException;
 import org.example.repositories.ClientRepository;
 import org.example.requestsService.RequestServices;
 import org.example.services.ClientService;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
-class Client {
+public class Client {
 
-    @Getter
-    private ArrayList<Message> messages;
+    private static final ServerCredentials mockedServerUsp = new ServerCredentials("localhost", 666, "usp.br");
+    private static final ServerCredentials mockedServerUnesp = new ServerCredentials("localhost", 777, "unesp.br");
+    private static final ServerCredentials mockedServerUnicamp = new ServerCredentials("localhost", 888, "unicamp.br");
 
-    public static void start() {
-        var clientService = new ClientService(new RequestServices(), new ClientRepository());
-        var clientRepository = new ClientRepository();
-        ArrayList<Message> messages = new Client().getMessages();
+    public static void main(String[] args) {
+        final String configuration = args[0];
 
-        try (Scanner scanner = new Scanner(System.in)) {
+        ServerCredentials mockedServer = switch (configuration) {
+            case "1" -> mockedServerUsp;
+            case "2" -> mockedServerUnesp;
+            default -> throw new RuntimeException();
+        };
 
-            System.out.println("Insira seu domínio: ");
-            String domain =  scanner.nextLine();
+        new Client().start(mockedServer);
+    }
 
-            System.out.println("Insira seu usuário: ");
-            String alias =  scanner.nextLine();
+    public void start(final ServerCredentials serverCredentials) {
+        final ClientRepository clientRepository = new ClientRepository(serverCredentials);
+        final var clientService = new ClientService(new RequestServices(), clientRepository);
 
-            //String alias = "vinicius";
+        try (final Scanner scanner = new Scanner(System.in)) {
 
-            System.out.println("Insira sua senha: ");
-            String password = scanner.nextLine();
-            //String password = "123";
+            System.out.println("Bem vindo ao cliente de email " + serverCredentials.domain() + "!");
 
-            clientService.authenticate(domain,alias,password);
-
-            var serverDomain = clientRepository.getConnectedServer(domain);
-            System.out.println("Você está conectado no servidor: " + serverDomain.domain());
+            login(clientService, scanner);
+            clearTerminal();
 
             /*
-            *  TODO:
-            *   - Opções para acessar as funcionalidades do email
-            *   - Visualizar Mensagens
-            *   - Enviar mensagem
-            * */
-            while (true){
-                System.out.println("**********FUNCIONALIDADES**********\n\n" +
-                                           "(Digite uma das opções abaixo)\n" +
-                                           "Enviar e-mail: (1)\n" +
-                                           "Ver e-mail(s) novos: (2)\n" +
-                                           "Sair (Q)\n");
-                String menu = scanner.nextLine();
+             *  TODO:
+             *   - Opções para acessar as funcionalidades do email
+             *   - Visualizar Mensagens
+             *   - Enviar mensagem
+             * */
+            while (true) {
+                System.out.println("""
+                                           **********FUNCIONALIDADES**********
+
+                                           (Digite uma das opções abaixo)
+
+                                           [1] Enviar e-mail
+                                           [2] Visualizar e-mails
+                                           [Q] Sair
+                                           """);
+
+                final String menu = scanner.nextLine();
+
                 switch (menu) {
                     case "1" -> {
-                        System.out.println("Insira o email de destino: ");
-                        String recipientEmail = scanner.nextLine();
-                        System.out.println("Insira o assunto: ");
-                        String subject = scanner.nextLine();
-                        System.out.println("Insira o corpo da mensagem: ");
-                        String messageBody = scanner.nextLine();
+                        final String recipientEmail = getValidInput(scanner, "Insira o email de destino: ");
+                        final String subject = getValidInput(scanner, "Insira o assunto: ");
+                        final String messageBody = getValidInput(scanner, "Insira o corpo da mensagem: ");
+
                         System.out.println("Pressione enter para enviar: ");
                         scanner.nextLine();
-                        clientService.sendMessage(recipientEmail, subject, messageBody);
 
-                        break;
+                        try {
+                            clientService.sendMessage(recipientEmail, subject, messageBody);
+                        } catch (final ClientNotFoundException | DomainNotFoundException | NotAuthenticatedException e) {
+                            System.out.println(e.getMessage());
+                            break;
+                        }
+                        System.out.println("Mensagem enviada com sucesso!");
                     }
                     case "2" -> {
                         System.out.println("Buscando mensagens...");
-                        clientRepository.saveMessages(messages);
+
+                        List<Message> messages = new ArrayList<>(clientRepository.getReceivedMessages());
                         messages.sort(Message::compareTo);
-                        LocalDate dateFrom = messages.get(messages.size()-1).getSendDate();
+
+                        clientRepository.storeMessages(messages);
+
+
+//                        final LocalDate dateFrom = messages.get(messages.size() - 1).getSendDate();
+                        final LocalDate dateFrom = LocalDate.now().minusDays(10);
+
                         clientService.receiveMessage(dateFrom, LocalDate.now());
 
                         System.out.println("E-mail(s):\n---------------------------");
-                        for(int i =0; i < messages.size()-1; i++){
-                            System.out.println("["+i+"] - " + messages.get(i).getSubject());
+                        for (int i = 0; i < messages.size() - 1; i++) {
+                            System.out.println("[" + i + "] - " + messages.get(i).getSubject());
                         }
                         System.out.println("---------------------------\n\nSelecione uma das mensagens: ");
-                        while(true){
-                            String nMessage = scanner.nextLine();
+                        while (true) {
+                            final String nMessage = scanner.nextLine();
                             if (nMessage.equals("Q") || nMessage.equals("q")) break;
                             boolean isNumber = false;
-                            for(int i = 0; i < messages.size()-1; i++){
-                                if(nMessage.equals(Integer.toString(i))){
-                                    isNumber=true;
+                            for (int i = 0; i < messages.size() - 1; i++) {
+                                if (nMessage.equals(Integer.toString(i))) {
+                                    isNumber = true;
                                     break;
                                 }
                             }
-                            if(isNumber){
-                                int indexMessage= Integer.parseInt(nMessage);
-                                System.out.println("Remetente: " + messages.get(indexMessage).getFromAlias() +
-                                                           "\nDomínio: " + messages.get(indexMessage).getFromDomain() +
-                                                           "\nAssunto: " + messages.get(indexMessage).getSubject() +
-                                                           "\n\n" + messages.get(indexMessage).getBody()
-                                );
+                            if (isNumber) {
+                                final int indexMessage = Integer.parseInt(nMessage);
+                                System.out.println(
+                                        "Remetente: " + messages.get(indexMessage).getFromAlias() + "\nDomínio: "
+                                                + messages.get(indexMessage).getFromDomain() + "\nAssunto: "
+                                                + messages.get(indexMessage).getSubject() + "\n\n" + messages.get(
+                                                indexMessage).getBody());
                                 break;
                             } else {
                                 System.out.println("Por favor, digite uma opção válida.");
                             }
                         }
-
-                        break;
                     }
 
                     case "Q", "q" -> {
-                        return;
+                        System.out.println("Saindo...");
+                        System.exit(0);
                     }
 
-                    default -> {
-                        System.out.println("Por favor, digite uma opção válida.");
-                        break;
-                    }
+                    default -> System.out.println("Por favor, digite uma opção válida.");
                 }
             }
-
-
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (final Exception e) {
+            System.out.println("Algo deu errado, tente novamente.");
+            System.exit(1);
         }
+    }
+    private void login(final ClientService clientService, final Scanner scanner) {
+        while (true) {
+            final String username = getValidInput(scanner, "Insira um nome de usuário: ");
+            final String password = getValidInput(scanner, "Insira sua senha: ");
 
-
+            try {
+                clientService.authenticate(username, password);
+                break;
+            } catch (final NotAuthenticatedException e) {
+                System.out.println(e.getMessage());
+            } catch (final Exception e) {
+                System.out.println("Erro ao autenticar usuário. Tente novamente mais tarde.");
+                System.exit(1);
+            }
+        }
+    }
+    private static void clearTerminal() throws IOException {
+        Runtime.getRuntime().exec("clear");
     }
 
-
- /* public static void start() {
-    try (
-            Socket socket = new Socket("127.0.0.1", 666);
-            BufferedWriter writer = IOHelper.getBufferedWriter(socket.getOutputStream());
-            BufferedReader reader = IOHelper.getBufferedReader(socket.getInputStream())
-    ) {
-      System.out.println("Using address " + socket.getInetAddress() + "\t" + socket.getLocalPort());
-      System.out.println("Requesting");
-      writer.write("Hello.java \n");
-      writer.flush();
-      System.out.println("Reading response:");
-      System.out.println(reader.readLine());
-    } catch (UnknownHostException e) {
-      throw new RuntimeException(e);
-    } catch (IOException e) {
-      throw new RuntimeException("Cannot create client socket", e);
+    private String getValidInput(final Scanner scanner, final String message) {
+        System.out.println(message);
+        String input = scanner.nextLine();
+        while (input.trim().isEmpty()) {
+            System.out.println("Por favor, digite uma opção válida.");
+            input = scanner.nextLine();
+        }
+        return input;
     }
-  }*/
 }

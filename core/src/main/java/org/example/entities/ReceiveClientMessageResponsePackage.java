@@ -3,37 +3,27 @@ package org.example.entities;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.example.enums.DeliveryStatus;
+public class ReceiveClientMessageResponsePackage implements Serializable {
 
-public class ReceiveClientMessageResponsePackage {
+    @Getter
+    private final LocalDate dateFrom;
+    @Getter
+    private final LocalDate dateTo;
+    @Getter
+    private final List<Message> messages;
+    @Setter
+    private ClientCredentials clientCredentials;
 
-    public ReceiveClientMessageResponsePackage(
-            ClientAddress clientAddressParam,
-            LocalDate dateFromParam,
-            LocalDate dateToParam,
-            List<Message> messagesParam
-    )
-    {
-        clientAddress = clientAddressParam;
+    public ReceiveClientMessageResponsePackage(final ClientCredentials clientCredentialsParam, final LocalDate dateFromParam,
+            final LocalDate dateToParam, final List<Message> messagesParam) {
+        clientCredentials = clientCredentialsParam;
         dateFrom = dateFromParam;
         dateTo = dateToParam;
         messages = messagesParam;
     }
 
-
-    @Getter
-    private LocalDate dateFrom;
-
-    @Getter
-    private LocalDate dateTo;
-
-    @Setter
-    private ClientAddress clientAddress;
-
-    @Getter
-    private List<Message> messages;
-    
 }

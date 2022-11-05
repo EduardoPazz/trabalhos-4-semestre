@@ -1,9 +1,8 @@
 package org.example.exceptions;
 
-public class NotAuthenticatedException extends Exception{
+public class NotAuthenticatedException extends Exception {
 
-    public NotAuthenticatedException(String msg)
-    {
+    public NotAuthenticatedException(final String msg) {
         super(msg);
     }
 }
