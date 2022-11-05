@@ -4,6 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.enums.DeliveryStatus;
+import org.example.exceptions.DomainNotFoundException;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,8 +24,12 @@ public class Message implements Comparable<Message>, Serializable {
     private DeliveryStatus deliveryStatus;
 
     public Message(final String emailAddressParam, final String fromAliasParam, final String fromDomainParam, final String subjectParam,
-            final String bodyParam) {
+            final String bodyParam) throws DomainNotFoundException {
         final String[] emailAddressArr = emailAddressParam.split("@");
+
+        if(emailAddressArr.length != 2) {
+            throw new DomainNotFoundException("Endereço de email inválido!");
+        }
 
         toAlias = emailAddressArr[0];
         toDomain = emailAddressArr[1];

@@ -42,14 +42,7 @@ public class Client {
             System.out.println("Bem vindo ao cliente de email " + serverCredentials.domain() + "!");
 
             login(clientService, scanner);
-//            clearTerminal();
 
-            /*
-             *  TODO:
-             *   - Opções para acessar as funcionalidades do email
-             *   - Visualizar Mensagens
-             *   - Enviar mensagem
-             * */
             while (true) {
                 System.out.println("""
                                            **********FUNCIONALIDADES**********
