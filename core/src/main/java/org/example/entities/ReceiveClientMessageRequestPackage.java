@@ -3,7 +3,8 @@ package org.example.entities;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public record ReceiveClientMessageRequestPackage(ClientCredentials address, LocalDateTime dateFrom, LocalDateTime dateTo) implements Serializable {
+public record ReceiveClientMessageRequestPackage(ClientCredentials address, LocalDateTime dateFrom,
+                                                 LocalDateTime dateTo) implements Serializable {
 
     public ClientCredentials getClientAddress() {
         return this.address;

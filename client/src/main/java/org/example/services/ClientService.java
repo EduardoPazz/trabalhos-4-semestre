@@ -26,17 +26,10 @@ public class ClientService {
     private final RequestServices requestServices;
     private final ClientRepository clientRepository;
 
-
-
-
     public ClientService(final RequestServices requestService, final ClientRepository clientRepository) {
         requestServices = requestService;
         this.clientRepository = clientRepository;
     }
-
-
-
-
 
     public void sendMessage(final String recipientEmail, final String subject,
             final String body) throws ClientNotFoundException, NotAuthenticatedException, IOException, ClassNotFoundException, DomainNotFoundException {
@@ -44,7 +37,8 @@ public class ClientService {
         final ClientCredentials clientCredentials = clientRepository.getClientCredentials();
         final ServerCredentials serverAddress = clientRepository.getServerCredentials();
 
-        final Message message = new Message(recipientEmail, clientCredentials.username(), serverAddress.domain(), subject, body);
+        final Message message =
+                new Message(recipientEmail, clientCredentials.username(), serverAddress.domain(), subject, body);
         final MessagePackage messagePackage =
                 new MessagePackage(HostTypeEnum.CLIENT, clientCredentials.token(), message);
 
@@ -64,14 +58,8 @@ public class ClientService {
         }
     }
 
-
-
-
     public void receiveMessage(final LocalDateTime dateFrom,
             final LocalDateTime dateTo) throws IOException, ClassNotFoundException {
-        //TODO:
-        // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
-        // - Armazenar isso no repositório do cliente
 
         final var clientAddressData = clientRepository.getClientCredentials();
         final ServerCredentials serverCredentials = clientRepository.getServerCredentials();
@@ -82,10 +70,6 @@ public class ClientService {
 
         clientRepository.storeMessages(response.getMessages());
     }
-
-
-
-
 
     public void authenticate(final String username,
             final String password) throws NotAuthenticatedException, IOException, ClassNotFoundException {

@@ -15,24 +15,19 @@ import java.util.Set;
 public class ClientRepository {
 
     private final Set<Message> receivedMessages = new HashSet<>();
-
-    public List<Message> getReceivedMessages() {
-        final List<Message> receivedMessagesArr = new ArrayList<>(receivedMessages);
-        receivedMessagesArr.sort(Message::compareTo);
-        return receivedMessagesArr;
-    }
-
     @Getter
     private final ServerCredentials serverCredentials;
     @Getter
     @Setter
     private ClientCredentials clientCredentials;
-
-
     public ClientRepository(final ServerCredentials serverCredentials) {
         this.serverCredentials = serverCredentials;
     }
-
+    public List<Message> getReceivedMessages() {
+        final List<Message> receivedMessagesArr = new ArrayList<>(receivedMessages);
+        receivedMessagesArr.sort(Message::compareTo);
+        return receivedMessagesArr;
+    }
     public void storeMessages(final Collection<Message> messages) {
         receivedMessages.addAll(messages);
     }

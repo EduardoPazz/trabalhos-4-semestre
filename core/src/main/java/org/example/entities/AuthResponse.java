@@ -17,8 +17,8 @@ public class AuthResponse implements Serializable {
     private String token;
     private LocalDateTime expiresIn;
 
-
-    public AuthResponse(final AuthStatusEnum authStatusParam, final String tokenParam, final LocalDateTime expiresInParam) {
+    public AuthResponse(final AuthStatusEnum authStatusParam, final String tokenParam,
+            final LocalDateTime expiresInParam) {
         type = RequestTypeEnum.AUTH;
         authStatus = authStatusParam;
         expiresIn = expiresInParam;

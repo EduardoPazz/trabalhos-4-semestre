@@ -29,8 +29,6 @@ class Server {
 
     private static final ClientAddressCredentials mockedClientElonMusk =
             new ClientAddressCredentials("localhost", 50001, "Elon.Musk", "tesla");
-    private Logger logger;
-
 
     public static void main(final String[] args) {
         final String configuration = args[0];

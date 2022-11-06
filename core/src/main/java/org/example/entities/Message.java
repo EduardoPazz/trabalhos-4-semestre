@@ -23,11 +23,11 @@ public class Message implements Comparable<Message>, Serializable {
     private String body;
     private DeliveryStatus deliveryStatus;
 
-    public Message(final String emailAddressParam, final String fromAliasParam, final String fromDomainParam, final String subjectParam,
-            final String bodyParam) throws DomainNotFoundException {
+    public Message(final String emailAddressParam, final String fromAliasParam, final String fromDomainParam,
+            final String subjectParam, final String bodyParam) throws DomainNotFoundException {
         final String[] emailAddressArr = emailAddressParam.split("@");
 
-        if(emailAddressArr.length != 2) {
+        if (emailAddressArr.length != 2) {
             throw new DomainNotFoundException("Endereço de email inválido!");
         }
 

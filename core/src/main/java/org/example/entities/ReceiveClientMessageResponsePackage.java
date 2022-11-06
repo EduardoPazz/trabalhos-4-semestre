@@ -18,12 +18,11 @@ public class ReceiveClientMessageResponsePackage implements Serializable {
     @Setter
     private ClientCredentials clientCredentials;
 
-    public ReceiveClientMessageResponsePackage(final ClientCredentials clientCredentialsParam, final LocalDateTime dateFromParam,
-            final LocalDateTime dateToParam, final List<Message> messagesParam) {
+    public ReceiveClientMessageResponsePackage(final ClientCredentials clientCredentialsParam,
+            final LocalDateTime dateFromParam, final LocalDateTime dateToParam, final List<Message> messagesParam) {
         clientCredentials = clientCredentialsParam;
         dateFrom = dateFromParam;
         dateTo = dateToParam;
         messages = messagesParam;
     }
-
 }

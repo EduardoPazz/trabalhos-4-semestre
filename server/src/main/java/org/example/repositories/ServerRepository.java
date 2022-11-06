@@ -1,7 +1,7 @@
 package org.example.repositories;
 
-import org.example.entities.ClientCredentials;
 import org.example.entities.ClientAddressCredentials;
+import org.example.entities.ClientCredentials;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
 import org.example.exceptions.ClientNotFoundException;
@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ServerRepository {
-
 
     private final ServerCredentials ownCredentials;
     private final Set<ServerCredentials> knownServers;
@@ -50,14 +49,12 @@ public class ServerRepository {
                 .orElseThrow(() -> new ClientNotFoundException(alias + " " + password));
     }
 
-
     public ServerCredentials getServerByDomain(final String domain) throws DomainNotFoundException {
         return knownServers.stream()
                 .filter(server -> server.domain().equals(domain))
                 .findFirst()
                 .orElseThrow(() -> new DomainNotFoundException(domain));
     }
-
 
     public void updateTokenClientCredentials(final String alias, final String token,
             final LocalDateTime expiresDate) throws ClientNotFoundException {
@@ -85,20 +82,15 @@ public class ServerRepository {
                     .orElseThrow(() -> new ClientNotFoundException(clientCredentials.username()))
                     .getValue()
                     .stream()
-                    .filter(message -> (
-                                    message.getSendDate().isAfter(dateFrom) ||
-                                    message.getSendDate().isEqual(dateFrom)
-                            ) &&
-                            (
-                                    message.getSendDate().isBefore(dateTo) ||
-                                    message.getSendDate().isEqual(dateTo)
-                            )
-                    ).collect(Collectors.toList());
+                    .filter(message ->
+                                    (message.getSendDate().isAfter(dateFrom) || message.getSendDate().isEqual(dateFrom))
+                                            && (message.getSendDate().isBefore(dateTo) || message.getSendDate()
+                                            .isEqual(dateTo)))
+                    .collect(Collectors.toList());
         } catch (final ClientNotFoundException e) {
 
             e.printStackTrace();
         }
         return null;
     }
-
 }

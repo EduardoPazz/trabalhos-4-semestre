@@ -12,7 +12,6 @@ import java.net.Socket;
 
 public record RequestHandler(Socket socket, ServerService serverService) implements Runnable {
 
-
     @Override
     public void run() {
         try (socket;
@@ -33,7 +32,6 @@ public record RequestHandler(Socket socket, ServerService serverService) impleme
         }
     }
 
-
     private Object reducePayload(final Object payload) {
         if (payload instanceof Auth) {
             return serverService.authRequest((Auth) payload);
@@ -49,5 +47,4 @@ public record RequestHandler(Socket socket, ServerService serverService) impleme
 
         return null;
     }
-
 }
