@@ -29,34 +29,26 @@ class Server {
 
     private static final ClientAddressCredentials mockedClientElonMusk =
             new ClientAddressCredentials("localhost", 50001, "Elon.Musk", "tesla");
-    private Logger logger;
-
 
     public static void main(final String[] args) {
         final String configuration = args[0];
 
         switch (configuration) {
-            case "1" -> {
-                new Server().start(mockedServerUsp, Set.of(mockedServerUnesp, mockedServerUnicamp),
-                                   Set.of(mockedClientEdu, mockedClientJB));
-            }
+            case "1" -> new Server().start(mockedServerUsp, Set.of(mockedServerUnesp, mockedServerUnicamp),
+                                           Set.of(mockedClientEdu, mockedClientJB));
 
-            case "2" -> {
-                new Server().start(mockedServerUnesp, Set.of(mockedServerUsp, mockedServerUnicamp),
-                                   Set.of(mockedClientVini, mockedClientElonMusk));
-            }
+            case "2" -> new Server().start(mockedServerUnesp, Set.of(mockedServerUsp, mockedServerUnicamp),
+                                           Set.of(mockedClientVini, mockedClientElonMusk));
 
-            case "3" -> {
-                new Server().start(mockedServerUnicamp, Set.of(mockedServerUnesp, mockedServerUsp),
-                                   Set.of(mockedClientRyan, mockedClientMarcus));
-            }
+            case "3" -> new Server().start(mockedServerUnicamp, Set.of(mockedServerUnesp, mockedServerUsp),
+                                           Set.of(mockedClientRyan, mockedClientMarcus));
         }
     }
 
     void start(final ServerCredentials ownCredentials, final Set<ServerCredentials> knownServers,
             final Set<ClientAddressCredentials> clients) {
 
-        logger = new Logger(ownCredentials.toString());
+        final Logger logger = new Logger(ownCredentials.toString());
 
         final ServerRepository repository = new ServerRepository(ownCredentials, knownServers, clients);
 
