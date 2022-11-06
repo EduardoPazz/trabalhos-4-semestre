@@ -14,8 +14,6 @@ public class ClientAddressCredentials {
     private String token;
     private LocalDateTime expiresTokenIn;
     private String password;
-    public ClientAddressCredentials() {
-    }
     public ClientAddressCredentials(final String addressParam, final int portParam, final String aliasParam,
             final String passwordParam) {
         address = addressParam;

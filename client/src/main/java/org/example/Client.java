@@ -9,7 +9,6 @@ import org.example.repositories.ClientRepository;
 import org.example.requestsService.RequestServices;
 import org.example.services.ClientService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -21,10 +20,10 @@ public class Client {
     private static final ServerCredentials mockedServerUnesp = new ServerCredentials("localhost", 777, "unesp.br");
     private static final ServerCredentials mockedServerUnicamp = new ServerCredentials("localhost", 888, "unicamp.br");
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         final String configuration = args[0];
 
-        ServerCredentials mockedServer = switch (configuration) {
+        final ServerCredentials mockedServer = switch (configuration) {
             case "1" -> mockedServerUsp;
             case "2" -> mockedServerUnesp;
             case "3" -> mockedServerUnicamp;
@@ -33,7 +32,6 @@ public class Client {
 
         new Client().start(mockedServer);
     }
-
     public void start(final ServerCredentials serverCredentials) {
         final ClientRepository clientRepository = new ClientRepository(serverCredentials);
         final var clientService = new ClientService(new RequestServices(), clientRepository);
@@ -71,10 +69,8 @@ public class Client {
                         } catch (final ClientNotFoundException | DomainNotFoundException e) {
                             System.out.println(e.getMessage());
                             break;
-                        }
-                        catch(NotAuthenticatedException e)
-                        {
-                            login(clientService,scanner);
+                        } catch (final NotAuthenticatedException e) {
+                            login(clientService, scanner);
                             continue;
                         }
                         catch(Exception e)
@@ -105,7 +101,9 @@ public class Client {
                         for (int i = 0; i < messages.size(); i++) {
                             System.out.println("[" + i + "] - " + messages.get(i).getSubject());
                         }
+
                         System.out.println("---------------------------\n\nSelecione uma das mensagens: ");
+
                         while (true) {
                             final String nMessage = scanner.nextLine();
                             if (nMessage.equals("Q") || nMessage.equals("q")) break;
@@ -158,10 +156,6 @@ public class Client {
             }
         }
     }
-    private static void clearTerminal() throws IOException {
-        Runtime.getRuntime().exec("clear");
-    }
-
     private String getValidInput(final Scanner scanner, final String message) {
         System.out.println(message);
         String input = scanner.nextLine();

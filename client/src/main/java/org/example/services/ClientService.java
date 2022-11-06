@@ -25,8 +25,6 @@ public class ClientService {
 
     private final RequestServices requestServices;
     private final ClientRepository clientRepository;
-    private ServerCredentials hostedServer;
-    private ClientCredentials clientData;
 
 
 
@@ -70,13 +68,13 @@ public class ClientService {
 
 
     public void receiveMessage(final LocalDateTime dateFrom,
-            final LocalDateTime dateTo) throws ClientNotFoundException, IOException, ClassNotFoundException {
+            final LocalDateTime dateTo) throws IOException, ClassNotFoundException {
         //TODO:
         // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
         // - Armazenar isso no repositório do cliente
 
         final var clientAddressData = clientRepository.getClientCredentials();
-        ServerCredentials serverCredentials = clientRepository.getServerCredentials();
+        final ServerCredentials serverCredentials = clientRepository.getServerCredentials();
 
         final var messageRequest = new ReceiveClientMessageRequestPackage(clientAddressData, dateFrom, dateTo);
         final var response =

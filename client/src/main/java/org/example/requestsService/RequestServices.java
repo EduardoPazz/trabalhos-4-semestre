@@ -16,9 +16,8 @@ public class RequestServices {
              final ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 
             outputStream.writeObject(payload);
-            final Object response = inputStream.readObject();
 
-            return response;
+            return inputStream.readObject();
         }
     }
 }

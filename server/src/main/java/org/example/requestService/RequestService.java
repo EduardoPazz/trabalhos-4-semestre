@@ -2,7 +2,6 @@ package org.example.requestService;
 
 import org.example.entities.ServerCredentials;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -18,13 +17,9 @@ public enum RequestService {
 
             outputStream.writeObject(payload);
             response = inputStream.readObject();
-
-        } catch (final IOException e) {
-            e.printStackTrace();
         } catch (final Exception e) {
             e.printStackTrace();
         }
         return response;
     }
-
 }

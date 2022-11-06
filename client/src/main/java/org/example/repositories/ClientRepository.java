@@ -17,7 +17,7 @@ public class ClientRepository {
     private final Set<Message> receivedMessages = new HashSet<>();
 
     public List<Message> getReceivedMessages() {
-        List<Message> receivedMessagesArr = new ArrayList<>(receivedMessages);
+        final List<Message> receivedMessagesArr = new ArrayList<>(receivedMessages);
         receivedMessagesArr.sort(Message::compareTo);
         return receivedMessagesArr;
     }
