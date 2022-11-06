@@ -4,15 +4,15 @@ import lombok.Getter;
 import org.example.enums.DeliveryStatus;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 public class DeliveryResponse implements Serializable {
     private final DeliveryStatus status;
-    private final LocalDate date;
+    private final LocalDateTime date;
 
     public DeliveryResponse(final DeliveryStatus status) {
-        date = LocalDate.now();
+        date = LocalDateTime.now();
         this.status = status;
     }
 }

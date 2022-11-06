@@ -1,17 +1,20 @@
 package org.example.entities;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.enums.DeliveryStatus;
+import org.example.exceptions.DomainNotFoundException;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class Message implements Comparable<Message>, Serializable {
 
-    private LocalDate sendDate;
+    private LocalDateTime sendDate;
     private String toAlias;
     private String toDomain;
     private String fromAlias;
@@ -20,18 +23,23 @@ public class Message implements Comparable<Message>, Serializable {
     private String body;
     private DeliveryStatus deliveryStatus;
 
-    public Message(final String emailAddressParam, final String fromAliasParam, final String subjectParam,
-            final String bodyParam) {
+    public Message(final String emailAddressParam, final String fromAliasParam, final String fromDomainParam, final String subjectParam,
+            final String bodyParam) throws DomainNotFoundException {
         final String[] emailAddressArr = emailAddressParam.split("@");
+
+        if(emailAddressArr.length != 2) {
+            throw new DomainNotFoundException("Endereço de email inválido!");
+        }
 
         toAlias = emailAddressArr[0];
         toDomain = emailAddressArr[1];
 
+        fromDomain = fromDomainParam;
         fromAlias = fromAliasParam;
         subject = subjectParam;
         body = bodyParam;
 
-        sendDate = LocalDate.now();
+        sendDate = LocalDateTime.now();
     }
 
     @Override

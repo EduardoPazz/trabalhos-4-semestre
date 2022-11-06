@@ -1,6 +1,5 @@
 package org.example;
 
-import lombok.Getter;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
 import org.example.exceptions.ClientNotFoundException;
@@ -11,11 +10,10 @@ import org.example.requestsService.RequestServices;
 import org.example.services.ClientService;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 public class Client {
 
@@ -29,6 +27,7 @@ public class Client {
         ServerCredentials mockedServer = switch (configuration) {
             case "1" -> mockedServerUsp;
             case "2" -> mockedServerUnesp;
+            case "3" -> mockedServerUnicamp;
             default -> throw new RuntimeException();
         };
 
@@ -44,14 +43,7 @@ public class Client {
             System.out.println("Bem vindo ao cliente de email " + serverCredentials.domain() + "!");
 
             login(clientService, scanner);
-            clearTerminal();
 
-            /*
-             *  TODO:
-             *   - Opções para acessar as funcionalidades do email
-             *   - Visualizar Mensagens
-             *   - Enviar mensagem
-             * */
             while (true) {
                 System.out.println("""
                                            **********FUNCIONALIDADES**********
@@ -76,28 +68,31 @@ public class Client {
 
                         try {
                             clientService.sendMessage(recipientEmail, subject, messageBody);
-                        } catch (final ClientNotFoundException | DomainNotFoundException | NotAuthenticatedException e) {
+                        } catch (final ClientNotFoundException | DomainNotFoundException e) {
                             System.out.println(e.getMessage());
                             break;
+                        }
+                        catch(NotAuthenticatedException e)
+                        {
+                            login(clientService,scanner);
+                            continue;
                         }
                         System.out.println("Mensagem enviada com sucesso!");
                     }
                     case "2" -> {
                         System.out.println("Buscando mensagens...");
 
-                        List<Message> messages = new ArrayList<>(clientRepository.getReceivedMessages());
-                        messages.sort(Message::compareTo);
-
-                        clientRepository.storeMessages(messages);
-
-
 //                        final LocalDate dateFrom = messages.get(messages.size() - 1).getSendDate();
-                        final LocalDate dateFrom = LocalDate.now().minusDays(10);
+                        List<Message> messages = clientRepository.getReceivedMessages();
 
-                        clientService.receiveMessage(dateFrom, LocalDate.now());
+                        final LocalDateTime dateFrom = messages.size() == 0 ? LocalDateTime.of(1982, Month.JANUARY, 1, 1,1) : messages.get(messages.size() - 1).getSendDate();
+
+                        clientService.receiveMessage(dateFrom, LocalDateTime.now());
+
+                        messages = clientRepository.getReceivedMessages();
 
                         System.out.println("E-mail(s):\n---------------------------");
-                        for (int i = 0; i < messages.size() - 1; i++) {
+                        for (int i = 0; i < messages.size(); i++) {
                             System.out.println("[" + i + "] - " + messages.get(i).getSubject());
                         }
                         System.out.println("---------------------------\n\nSelecione uma das mensagens: ");
@@ -105,7 +100,7 @@ public class Client {
                             final String nMessage = scanner.nextLine();
                             if (nMessage.equals("Q") || nMessage.equals("q")) break;
                             boolean isNumber = false;
-                            for (int i = 0; i < messages.size() - 1; i++) {
+                            for (int i = 0; i < messages.size(); i++) {
                                 if (nMessage.equals(Integer.toString(i))) {
                                     isNumber = true;
                                     break;
@@ -149,8 +144,7 @@ public class Client {
             } catch (final NotAuthenticatedException e) {
                 System.out.println(e.getMessage());
             } catch (final Exception e) {
-                System.out.println("Erro ao autenticar usuário. Tente novamente mais tarde.");
-                System.exit(1);
+                System.out.println("Erro ao conectar-se ao servidor. Tente novamente mais tarde.");
             }
         }
     }

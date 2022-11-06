@@ -4,16 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.example.enums.DeliveryStatus;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 public class SendMessageResponse {
     private String type;
-    private LocalDate UTCDate;
+    private LocalDateTime UTCDate;
     private DeliveryStatus status;
 
-    public SendMessageResponse(final String typeParam, final LocalDate responseDate, final int deliveryStatusParam) {
+    public SendMessageResponse(final String typeParam, final LocalDateTime responseDate, final int deliveryStatusParam) {
         type = typeParam;
         UTCDate = responseDate;
         status = getDeliveryStatusByInt(deliveryStatusParam);

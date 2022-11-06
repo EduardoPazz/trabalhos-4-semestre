@@ -1,6 +1,6 @@
 package org.example.entities;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public record MessageListRequisition(String alias, LocalDate dateFrom, LocalDate dateTo) {
+public record MessageListRequisition(String alias, LocalDateTime dateFrom, LocalDateTime dateTo) {
 }

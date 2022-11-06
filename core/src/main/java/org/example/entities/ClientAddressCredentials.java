@@ -3,7 +3,7 @@ package org.example.entities;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -12,7 +12,7 @@ public class ClientAddressCredentials {
     private int port;
     private String alias;
     private String token;
-    private LocalDate expiresTokenIn;
+    private LocalDateTime expiresTokenIn;
     private String password;
     public ClientAddressCredentials() {
     }

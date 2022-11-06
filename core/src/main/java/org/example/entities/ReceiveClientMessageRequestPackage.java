@@ -1,19 +1,19 @@
 package org.example.entities;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-public record ReceiveClientMessageRequestPackage(ClientCredentials address, LocalDate dateFrom, LocalDate dateTo) implements Serializable {
+public record ReceiveClientMessageRequestPackage(ClientCredentials address, LocalDateTime dateFrom, LocalDateTime dateTo) implements Serializable {
 
     public ClientCredentials getClientAddress() {
         return this.address;
     }
 
-    public LocalDate getDateFrom() {
+    public LocalDateTime getDateFrom() {
         return this.dateFrom;
     }
 
-    public LocalDate getDateTo() {
+    public LocalDateTime getDateTo() {
         return this.dateTo;
     }
 }
