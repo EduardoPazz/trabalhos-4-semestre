@@ -73,6 +73,11 @@ public class Client {
                             login(clientService, scanner);
                             continue;
                         }
+                        catch(Exception e)
+                        {
+                            System.out.println("Falha ao conectar-se ao servidor, tente novamente mais tarde!");
+                            continue;
+                        }
                         System.out.println("Mensagem enviada com sucesso!");
                     }
                     case "2" -> {
@@ -81,11 +86,14 @@ public class Client {
 //                        final LocalDate dateFrom = messages.get(messages.size() - 1).getSendDate();
                         List<Message> messages = clientRepository.getReceivedMessages();
 
-                        final LocalDateTime dateFrom = messages.size() == 0
-                                                       ? LocalDateTime.of(1982, Month.JANUARY, 1, 1, 1)
-                                                       : messages.get(messages.size() - 1).getSendDate();
+                        final LocalDateTime dateFrom = messages.size() == 0 ? LocalDateTime.of(1982, Month.JANUARY, 1, 1,1) : messages.get(messages.size() - 1).getSendDate();
 
-                        clientService.receiveMessage(dateFrom, LocalDateTime.now());
+
+                        try {
+                            clientService.receiveMessage(dateFrom, LocalDateTime.now());
+                        }catch(Exception e) {
+                            System.out.println("Falha ao conectar-se ao servidor, exibindo mensagens locais!");
+                        }
 
                         messages = clientRepository.getReceivedMessages();
 

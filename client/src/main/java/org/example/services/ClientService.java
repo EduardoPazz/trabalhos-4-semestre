@@ -26,6 +26,9 @@ public class ClientService {
     private final RequestServices requestServices;
     private final ClientRepository clientRepository;
 
+
+
+
     public ClientService(final RequestServices requestService, final ClientRepository clientRepository) {
         requestServices = requestService;
         this.clientRepository = clientRepository;
