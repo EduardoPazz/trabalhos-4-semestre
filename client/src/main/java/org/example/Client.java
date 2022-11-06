@@ -27,6 +27,7 @@ public class Client {
         ServerCredentials mockedServer = switch (configuration) {
             case "1" -> mockedServerUsp;
             case "2" -> mockedServerUnesp;
+            case "3" -> mockedServerUnicamp;
             default -> throw new RuntimeException();
         };
 
@@ -67,9 +68,14 @@ public class Client {
 
                         try {
                             clientService.sendMessage(recipientEmail, subject, messageBody);
-                        } catch (final ClientNotFoundException | DomainNotFoundException | NotAuthenticatedException e) {
+                        } catch (final ClientNotFoundException | DomainNotFoundException e) {
                             System.out.println(e.getMessage());
                             break;
+                        }
+                        catch(NotAuthenticatedException e)
+                        {
+                            login(clientService,scanner);
+                            continue;
                         }
                         System.out.println("Mensagem enviada com sucesso!");
                     }
@@ -138,8 +144,7 @@ public class Client {
             } catch (final NotAuthenticatedException e) {
                 System.out.println(e.getMessage());
             } catch (final Exception e) {
-                System.out.println("Erro ao autenticar usuário. Tente novamente mais tarde.");
-                System.exit(1);
+                System.out.println("Erro ao conectar-se ao servidor. Tente novamente mais tarde.");
             }
         }
     }

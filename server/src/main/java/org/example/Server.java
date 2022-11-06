@@ -15,11 +15,20 @@ class Server {
     private static final ServerCredentials mockedServerUnesp = new ServerCredentials("localhost", 777, "unesp.br");
     private static final ServerCredentials mockedServerUnicamp = new ServerCredentials("localhost", 888, "unicamp.br");
     private static final ClientAddressCredentials mockedClientEdu =
-            new ClientAddressCredentials("localhost", 50001, "Edu", "1234");
+            new ClientAddressCredentials("localhost", 50001, "Eduardo", "1234");
     private static final ClientAddressCredentials mockedClientVini =
             new ClientAddressCredentials("localhost", 50001, "Vinicius", "4321");
     private static final ClientAddressCredentials mockedClientJB =
-            new ClientAddressCredentials("localhost", 50001, "JB", "hentai");
+            new ClientAddressCredentials("localhost", 50001, "JB", "ABC1234");
+
+    private static final ClientAddressCredentials mockedClientRyan =
+            new ClientAddressCredentials("localhost", 50001, "Ryan", "12344321");
+
+    private static final ClientAddressCredentials mockedClientMarcus =
+            new ClientAddressCredentials("localhost", 50001, "Marcus", "123456");
+
+    private static final ClientAddressCredentials mockedClientElonMusk =
+            new ClientAddressCredentials("localhost", 50001, "Elon.Musk", "tesla");
     private Logger logger;
 
 
@@ -34,7 +43,12 @@ class Server {
 
             case "2" -> {
                 new Server().start(mockedServerUnesp, Set.of(mockedServerUsp, mockedServerUnicamp),
-                                   Set.of(mockedClientVini));
+                                   Set.of(mockedClientVini, mockedClientElonMusk));
+            }
+
+            case "3" -> {
+                new Server().start(mockedServerUnicamp, Set.of(mockedServerUnesp, mockedServerUsp),
+                                   Set.of(mockedClientRyan, mockedClientMarcus));
             }
         }
     }
