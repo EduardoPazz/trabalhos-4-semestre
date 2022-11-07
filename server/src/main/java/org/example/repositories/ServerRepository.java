@@ -14,12 +14,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
+// Classe que representa o repositório do servidor. 
 public class ServerRepository {
 
     private final ServerCredentials ownCredentials;
     private final Set<ServerCredentials> knownServers;
     private final Map<ClientAddressCredentials, Set<Message>> clientToMessages;
 
+
+    //Funççao construtora do repositório do servidor. 
     public ServerRepository(final ServerCredentials ownCredentials, final Set<ServerCredentials> knownServers,
             final Set<ClientAddressCredentials> clients) {
         this.ownCredentials = ownCredentials;
@@ -27,10 +31,12 @@ public class ServerRepository {
         this.clientToMessages = clients.stream().collect(Collectors.toMap(client -> client, client -> new HashSet<>()));
     }
 
+    //Função que armazena mensagens recebidas de um cliente
     public void storeMessage(final String alias, final Message message) throws ClientNotFoundException {
         getClientMessagesByAlias(alias).add(message);
     }
 
+    //Função que retorna as mensagens recebidas de um cliente
     private Set<Message> getClientMessagesByAlias(final String alias) throws ClientNotFoundException {
         return clientToMessages.entrySet()
                 .stream()
@@ -40,6 +46,7 @@ public class ServerRepository {
                 .getValue();
     }
 
+    //Função que retorna as credenciais de um cliente
     public ClientAddressCredentials getClientByAliasAndPassword(final String alias,
             final String password) throws ClientNotFoundException {
         return clientToMessages.keySet()
@@ -49,6 +56,7 @@ public class ServerRepository {
                 .orElseThrow(() -> new ClientNotFoundException(alias + " " + password));
     }
 
+    //Retorna o servidor conhecido pelo dominio
     public ServerCredentials getServerByDomain(final String domain) throws DomainNotFoundException {
         return knownServers.stream()
                 .filter(server -> server.domain().equals(domain))
@@ -56,6 +64,7 @@ public class ServerRepository {
                 .orElseThrow(() -> new DomainNotFoundException(domain));
     }
 
+    //Atualiza o token de um cliente autenticado
     public void updateTokenClientCredentials(final String alias, final String token,
             final LocalDateTime expiresDate) throws ClientNotFoundException {
         final ClientAddressCredentials outdatedClient = clientToMessages.keySet()
@@ -68,10 +77,14 @@ public class ServerRepository {
         outdatedClient.setExpiresTokenIn(expiresDate);
     }
 
+    
     public String getOwnDomain() {
         return ownCredentials.domain();
     }
 
+    //Retorna as mensagens recebidas de um cliente de acordo com um range de datas. 
+    //Recebe uma requisição contendo as informações do cliente e os limites do range de datas, 
+    ///realiza o filtro, e envia um Set List que será armazenado no repositório do cliente
     public List<Message> getMessagesByClientAddressAndDateRange(final ClientCredentials clientCredentials,
             final LocalDateTime dateFrom, final LocalDateTime dateTo) {
         try {

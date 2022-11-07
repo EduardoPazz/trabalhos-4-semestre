@@ -7,6 +7,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/*
+Classe que representa um serviço de requisição. É utilizada pra enviar requisições ao servidor.
+ */
+
 public class RequestServices {
 
     public Object requestServer(final ServerCredentials serverAddress,

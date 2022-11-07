@@ -6,6 +6,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+
+//função responsável pelo recebimento de requisições do cliente pelo servidor
 public enum RequestService {
     ;
 

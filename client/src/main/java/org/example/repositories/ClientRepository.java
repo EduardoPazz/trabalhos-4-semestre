@@ -12,6 +12,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
+/*
+ Repositório do cliente:
+ Aqui ficam armazenadas as credenciais do cliente e do servidor, bem como as mensagens recebidas.
+ */
 public class ClientRepository {
 
     private final Set<Message> receivedMessages = new HashSet<>();

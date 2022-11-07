@@ -18,15 +18,20 @@ import org.example.requestService.RequestService;
 
 import java.time.LocalDateTime;
 
+
+//Classe responsável pela definição das funções realizadas pelo servidor
 public class ServerService {
 
     private final ServerRepository serverRepository;
 
+    //Incializa repositorio de servidores
     public ServerService(final ServerRepository serverRepository) {
         this.serverRepository = serverRepository;
     }
 
-    // TODO: implement real authentication
+    //Realiza a tratativa da autenticação do cliente. Recebe o pacote de autenticação e retorna o 
+    //pacote de resposta de autenticação contendo o token de acesso com validade de 1 dia. Após 
+    //a expiração do token é necessário realizar uma nova autenticação.
     public AuthResponse authRequest(final Auth auth) {
         try {
             serverRepository.getClientByAliasAndPassword(auth.getAlias(), auth.getPassword());
@@ -46,6 +51,7 @@ public class ServerService {
         return new AuthResponse(AuthStatusEnum.AUTHENTICATED, token, expiresDate);
     }
 
+    //Recebe uma mensagem tanto de servidor como de cliente.
     public DeliveryResponse receiveMessage(final MessagePackage message) {
         return switch (message.hostType()) {
             case CLIENT -> sendMessageFromClient(message);
@@ -53,6 +59,8 @@ public class ServerService {
         };
     }
 
+    //Realiza um envio de mensagem solicitado por um cliente para outro cliente. 
+    //Recebe o pacote de mensagem e retorna o pacote de resposta de entrega da mensagem.
     private DeliveryResponse sendMessageFromClient(final MessagePackage messagePackage) {
         final Message message = messagePackage.message();
 
@@ -71,6 +79,7 @@ public class ServerService {
         }
     }
 
+    //Recebe mensagem de um servidor.
     private DeliveryResponse receiveMessageFromServer(final MessagePackage messagePackage) {
         final Message message = messagePackage.message();
 
@@ -83,12 +92,9 @@ public class ServerService {
 
         return storeMessageIfPossibleAndGetDeliveryResponse(message, recipientAlias);
 
-        //TODO:
-        // - Como reconhecer o servidor?
-        // - Vai fazer alguns passos de identificação de servidor?
-        // - Pensar em uma forma de apresentação de servodor, casos os mesmos não sejam conhecidos ainda
     }
 
+    //Armazena mensagem no repositório do servidor.
     private DeliveryResponse storeMessageIfPossibleAndGetDeliveryResponse(final Message message,
             final String recipientAlias) {
         try {
@@ -99,6 +105,8 @@ public class ServerService {
         }
     }
 
+    //Realiza o envio de um pacote contendo a lista de mensagens de um cliente 
+    //levando em conta um data range.
     public ReceiveClientMessageResponsePackage receiveClientMessageRequest(
             final ReceiveClientMessageRequestPackage request) {
 

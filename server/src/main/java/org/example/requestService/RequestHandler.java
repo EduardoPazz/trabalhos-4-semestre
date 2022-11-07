@@ -10,6 +10,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+
+//função que identifica qual o tipo de requisição solicitada pelo cliente. 
+//As funções são centralizadas na função request Server, que recebe o pacote de requisição e o 
+//endereço do servidor. A partir daí, a função identifica qual o tipo de requisição, através da variável payload 
+//e chama a função correspondente.
 public record RequestHandler(Socket socket, ServerService serverService) implements Runnable {
 
     @Override

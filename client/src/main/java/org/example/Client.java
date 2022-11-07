@@ -14,8 +14,13 @@ import java.time.Month;
 import java.util.List;
 import java.util.Scanner;
 
+/*
+ * Classe principal do cliente. Aqui é onde o cliente interage com o sistema.
+ */
+
 public class Client {
 
+    //Definição dos endereços de domíno
     private static final ServerCredentials mockedServerUsp = new ServerCredentials("localhost", 666, "usp.br");
     private static final ServerCredentials mockedServerUnesp = new ServerCredentials("localhost", 777, "unesp.br");
     private static final ServerCredentials mockedServerUnicamp = new ServerCredentials("localhost", 888, "unicamp.br");
@@ -23,6 +28,7 @@ public class Client {
     public static void main(final String[] args) {
         final String configuration = args[0];
 
+        // Variáveis de mock para testes
         final ServerCredentials mockedServer = switch (configuration) {
             case "1" -> mockedServerUsp;
             case "2" -> mockedServerUnesp;
@@ -33,9 +39,11 @@ public class Client {
         new Client().start(mockedServer);
     }
     public void start(final ServerCredentials serverCredentials) {
+        //Cria novo repositório de cliente e inicia comunicação com servidor
         final ClientRepository clientRepository = new ClientRepository(serverCredentials);
         final var clientService = new ClientService(new RequestServices(), clientRepository);
 
+        //Menu de interação do cliente
         try (final Scanner scanner = new Scanner(System.in)) {
 
             System.out.println("Bem vindo ao cliente de email " + serverCredentials.domain() + "!");
@@ -63,7 +71,8 @@ public class Client {
 
                         System.out.println("Pressione enter para enviar: ");
                         scanner.nextLine();
-
+                        
+                        //Envia requisição de envio de mensagem ao servidor
                         try {
                             clientService.sendMessage(recipientEmail, subject, messageBody);
                         } catch (final ClientNotFoundException | DomainNotFoundException e) {
@@ -82,6 +91,7 @@ public class Client {
                         System.out.println("Buscando mensagens...");
 
 //                        final LocalDate dateFrom = messages.get(messages.size() - 1).getSendDate();
+                        //envia requisição de recebimento de mensagens ao servidor
                         List<Message> messages = clientRepository.getReceivedMessages();
 
                         final LocalDateTime dateFrom = messages.size() == 0
@@ -113,6 +123,8 @@ public class Client {
                                     break;
                                 }
                             }
+
+                            //Redige email que será enviado
                             if (isNumber) {
                                 final int indexMessage = Integer.parseInt(nMessage);
                                 System.out.println(
@@ -126,7 +138,7 @@ public class Client {
                             }
                         }
                     }
-
+                    //Opção de saída e encerramento da comunicação
                     case "Q", "q" -> {
                         System.out.println("Saindo...");
                         System.exit(0);
@@ -140,6 +152,7 @@ public class Client {
             System.exit(1);
         }
     }
+    //Autenticação do cliente
     private void login(final ClientService clientService, final Scanner scanner) {
         while (true) {
             final String username = getValidInput(scanner, "Insira um nome de usuário: ");
@@ -155,6 +168,8 @@ public class Client {
             }
         }
     }
+
+    //Verifica a entrada do usuário. Se digitar entrada em válida, realiza a tratativa novamente
     private String getValidInput(final Scanner scanner, final String message) {
         System.out.println(message);
         String input = scanner.nextLine();

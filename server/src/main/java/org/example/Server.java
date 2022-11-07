@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Set;
 
+//Classe responsável por iniciar o servidor e gerenciar sua interface
 class Server {
     private static final ServerCredentials mockedServerUsp = new ServerCredentials("localhost", 666, "usp.br");
     private static final ServerCredentials mockedServerUnesp = new ServerCredentials("localhost", 777, "unesp.br");
