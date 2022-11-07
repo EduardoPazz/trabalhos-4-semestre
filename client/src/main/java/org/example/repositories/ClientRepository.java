@@ -2,39 +2,33 @@ package org.example.repositories;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.entities.ClientAddress;
+import org.example.entities.ClientCredentials;
 import org.example.entities.Message;
 import org.example.entities.ServerCredentials;
-import org.example.repositories.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class ClientRepository {
 
+    private final Set<Message> receivedMessages = new HashSet<>();
     @Getter
-    private Set<Message> receivedMessages;
-
+    private final ServerCredentials serverCredentials;
     @Getter
     @Setter
-    private ClientAddress clientAddress;
-
-    public ServerCredentials getConnectedServer() {
-        return new ServerCredentials("127.0.0.1", 666, "usp.br");
+    private ClientCredentials clientCredentials;
+    public ClientRepository(final ServerCredentials serverCredentials) {
+        this.serverCredentials = serverCredentials;
     }
-
-
-    public void addReceivedMessages(Set<Message> messages) {
+    public List<Message> getReceivedMessages() {
+        final List<Message> receivedMessagesArr = new ArrayList<>(receivedMessages);
+        receivedMessagesArr.sort(Message::compareTo);
+        return receivedMessagesArr;
+    }
+    public void storeMessages(final Collection<Message> messages) {
         receivedMessages.addAll(messages);
     }
-
-
-    public void storeMessages(List<Message> message) {
-        database_connection db= new database_connection();
-
-        for (Message m : message) {
-            db.addMessage(m);
-        }
-    }
-
 }

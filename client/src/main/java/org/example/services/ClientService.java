@@ -1,56 +1,56 @@
 package org.example.services;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.example.entities.Auth;
 import org.example.entities.AuthResponse;
-import org.example.entities.ClientAddress;
+import org.example.entities.ClientCredentials;
 import org.example.entities.DeliveryResponse;
 import org.example.entities.Message;
 import org.example.entities.MessagePackage;
+import org.example.entities.ReceiveClientMessageRequestPackage;
+import org.example.entities.ReceiveClientMessageResponsePackage;
 import org.example.entities.ServerCredentials;
 import org.example.enums.AuthStatusEnum;
 import org.example.enums.DeliveryStatus;
 import org.example.enums.HostTypeEnum;
 import org.example.exceptions.ClientNotFoundException;
+import org.example.exceptions.DomainNotFoundException;
 import org.example.exceptions.NotAuthenticatedException;
 import org.example.repositories.ClientRepository;
 import org.example.requestsService.RequestServices;
-import org.example.entities.MessageListRequisition;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 public class ClientService {
 
     private final RequestServices requestServices;
     private final ClientRepository clientRepository;
-    private ServerCredentials hostedServer;
-    private ClientAddress clientData;
 
-    public ClientService(RequestServices requestService, ClientRepository clientRepository) {
+    public ClientService(final RequestServices requestService, final ClientRepository clientRepository) {
         requestServices = requestService;
         this.clientRepository = clientRepository;
     }
 
-    public void sendMessage(String emailAddressParam, String subjectParam,
-                            String bodyParam) throws ClientNotFoundException, NotAuthenticatedException {
+    public void sendMessage(final String recipientEmail, final String subject,
+            final String body) throws ClientNotFoundException, NotAuthenticatedException, IOException, ClassNotFoundException, DomainNotFoundException {
 
+        final ClientCredentials clientCredentials = clientRepository.getClientCredentials();
+        final ServerCredentials serverAddress = clientRepository.getServerCredentials();
 
-        var clientAddressData = clientRepository.getClientAddress();
-        var serverAddress = clientRepository.getConnectedServer();
+        final Message message =
+                new Message(recipientEmail, clientCredentials.username(), serverAddress.domain(), subject, body);
+        final MessagePackage messagePackage =
+                new MessagePackage(HostTypeEnum.CLIENT, clientCredentials.token(), message);
 
-        var message = new Message(emailAddressParam, clientAddressData.getAlias(), subjectParam, bodyParam);
-        var messagePackage = new MessagePackage(HostTypeEnum.CLIENT, clientAddressData.getToken(), message);
-
-        var response = (DeliveryResponse) requestServices.requestServer(serverAddress, messagePackage);
-
-        /*var sendMessageResponse = _requestService.SendMessageRequest(serverAddress, message, token); */
+        final DeliveryResponse response =
+                (DeliveryResponse) requestServices.requestServer(serverAddress, messagePackage);
 
         if (response.getStatus() == DeliveryStatus.UNKNOWN_CLIENT) {
             throw new ClientNotFoundException("Cliente não encontrado!");
         }
 
         if (response.getStatus() == DeliveryStatus.UNKNOWN_DOMAIN) {
-            throw new ClientNotFoundException("Domínio não encontrado!");
+            throw new DomainNotFoundException("Domínio não encontrado!");
         }
 
         if (response.getStatus() == DeliveryStatus.NOT_AUTHENTICATED) {
@@ -58,29 +58,33 @@ public class ClientService {
         }
     }
 
-    public void receiveMessage(String alias, LocalDate dateFrom, LocalDate dateTo) throws ClientNotFoundException {
-        //TODO:
-        // - Chamar função para enviar mensagem ao servidor Host para receber as mensagens
-        var MessageListRequisition = new MessageListRequisition(alias, dateFrom, dateTo);
-        List<Message> messages = (clientMessagesBox) requestServices.requestServer(hostedServer, MessageListRequisition);
+    public void receiveMessage(final LocalDateTime dateFrom,
+            final LocalDateTime dateTo) throws IOException, ClassNotFoundException {
 
-        
-        // - Armazenar isso no repositório (BD) do cliente
-        clientRepository.storeMessages(messages);
+        final var clientAddressData = clientRepository.getClientCredentials();
+        final ServerCredentials serverCredentials = clientRepository.getServerCredentials();
+
+        final var messageRequest = new ReceiveClientMessageRequestPackage(clientAddressData, dateFrom, dateTo);
+        final var response =
+                (ReceiveClientMessageResponsePackage) requestServices.requestServer(serverCredentials, messageRequest);
+
+        clientRepository.storeMessages(response.getMessages());
     }
 
+    public void authenticate(final String username,
+            final String password) throws NotAuthenticatedException, IOException, ClassNotFoundException {
+        final Auth auth = new Auth(username, password);
+        final ServerCredentials serverCredentials = clientRepository.getServerCredentials();
 
-    public void authenticate(String alias, String password) throws NotAuthenticatedException {
-        var auth = new Auth(alias, password);
-        var serverAddress = clientRepository.getConnectedServer();
-        var authResponse = (AuthResponse) requestServices.requestServer(serverAddress, auth);
+        final AuthResponse authResponse;
+        authResponse = (AuthResponse) requestServices.requestServer(serverCredentials, auth);
 
         if (authResponse.getAuthStatus() == AuthStatusEnum.AUTHENTICATED) {
-            var clientAdress = new ClientAddress(alias, "usp.br", authResponse.getToken());
+            final ClientCredentials clientCredentials = new ClientCredentials(username, authResponse.getToken());
 
-            clientRepository.setClientAddress(clientAdress);
+            clientRepository.setClientCredentials(clientCredentials);
         } else {
-            throw new NotAuthenticatedException("Falha ao autenticar, verifique suas credenciais!");
+            throw new NotAuthenticatedException("Falha ao autenticar, verifique suas credenciais.");
         }
     }
 }

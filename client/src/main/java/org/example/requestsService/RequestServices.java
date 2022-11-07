@@ -9,26 +9,15 @@ import java.net.Socket;
 
 public class RequestServices {
 
+    public Object requestServer(final ServerCredentials serverAddress,
+            final Object payload) throws IOException, ClassNotFoundException {
+        try (final Socket socket = new Socket(serverAddress.address(), serverAddress.port());
+             final ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+             final ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream())) {
 
-    public Object requestServer(ServerCredentials serverAddress, Object objRequest) {
-        Object response = null;
-        try {
-            Socket socket = new Socket(serverAddress.address(), serverAddress.port());
+            outputStream.writeObject(payload);
 
-            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-
-            outputStream.writeObject(objRequest);
-            response = inputStream.readObject();
-
-            return response;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+            return inputStream.readObject();
         }
-        return response;
     }
-
-
 }

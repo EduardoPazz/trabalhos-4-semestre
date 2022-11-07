@@ -1,11 +1,10 @@
 plugins {
-    id 'java'
     id 'application'
     id "io.freefair.lombok" version "6.5.1"
 }
 
 application {
-    mainClass = 'org.example.Main'
+    mainClass = 'org.example.Server'
 }
 
 repositories {
@@ -14,6 +13,4 @@ repositories {
 
 dependencies {
     implementation project(':core')
-    implementation 'org.projectlombok:lombok:1.18.22'
-    implementation 'org.projectlombok:lombok:1.18.22'
 }

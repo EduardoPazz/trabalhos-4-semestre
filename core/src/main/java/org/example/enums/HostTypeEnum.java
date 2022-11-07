@@ -1,6 +1,7 @@
 package org.example.enums;
 
-public enum HostTypeEnum {
-    SERVER,
-    CLIENT
+import java.io.Serializable;
+
+public enum HostTypeEnum implements Serializable {
+    SERVER, CLIENT
 }
