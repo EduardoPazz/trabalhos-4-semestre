@@ -1,8 +1,8 @@
-package org.example.database_clients;
+package org.example.database_accessors;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Reader extends DatabaseClient {
+public class Reader extends DatabaseAccessor {
 
   @Override
   public void run() {

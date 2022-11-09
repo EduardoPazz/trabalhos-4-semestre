@@ -1,8 +1,8 @@
-package org.example.database_clients;
+package org.example.database_accessors;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Writer extends DatabaseClient {
+public class Writer extends DatabaseAccessor {
 
   private static final String MODIFIED_FLAG = "MODIFICADO";
 
