@@ -1,7 +1,7 @@
 package org.example.helpers;
 
-import org.example.runnables.Reader;
-import org.example.runnables.Writer;
+import org.example.database_clients.Reader;
+import org.example.database_clients.Writer;
 
 import java.util.ArrayList;
 import java.util.Collections;
