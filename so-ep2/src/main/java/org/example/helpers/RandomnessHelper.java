@@ -12,17 +12,17 @@ public class RandomnessHelper {
 
   private static final int MAX_CAPACITY = 100;
 
-  public static List<DatabaseAccessor> getShuffledReadersAndWriters(
+  public static List<DatabaseAccessor> getShuffledDatabaseAccessors(List<String> database,
       int proportionOfReaders) {
-    List<DatabaseAccessor> readersAndWriters = new ArrayList<>(MAX_CAPACITY);
+    List<DatabaseAccessor> databaseAccessors = new ArrayList<>(MAX_CAPACITY);
 
     IntStream.range(0, proportionOfReaders)
-        .forEach(i -> readersAndWriters.add(new Reader()));
+        .forEach(i -> databaseAccessors.add(new Reader( i, database)));
     IntStream.range(proportionOfReaders, MAX_CAPACITY)
-        .forEach(i -> readersAndWriters.add(new Writer()));
+        .forEach(i -> databaseAccessors.add(new Writer(i, database)));
 
-    Collections.shuffle(readersAndWriters);
+    Collections.shuffle(databaseAccessors);
 
-    return readersAndWriters;
+    return databaseAccessors;
   }
 }
