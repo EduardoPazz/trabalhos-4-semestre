@@ -12,12 +12,12 @@ public class RandomnessHelper {
 
   private static final int MAX_CAPACITY = 100;
 
-  public static List<DatabaseAccessor> getShuffledDatabaseAccessors(List<String> database,
-      int proportionOfReaders) {
+  public static List<DatabaseAccessor> getShuffledDatabaseAccessors(
+      List<String> database, int proportionOfReaders) {
     List<DatabaseAccessor> databaseAccessors = new ArrayList<>(MAX_CAPACITY);
 
     IntStream.range(0, proportionOfReaders)
-        .forEach(i -> databaseAccessors.add(new Reader( i, database)));
+        .forEach(i -> databaseAccessors.add(new Reader(i, database)));
     IntStream.range(proportionOfReaders, MAX_CAPACITY)
         .forEach(i -> databaseAccessors.add(new Writer(i, database)));
 
