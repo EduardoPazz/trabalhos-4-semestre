@@ -17,14 +17,16 @@ public class Semaphore{
         this.processCounter--;
     }
 
-    public void down(){
-        if(this.flag > 0){
-            this.flag--;
+    public boolean down(){
+        if(this.flag == 1){
+            this.flag = 0;
+            return true;
         }
+        else return false;
     }
 
     public void up(){
-        this.flag++;
+        this.flag = 1;
     }
 
     public int getFlag() {
