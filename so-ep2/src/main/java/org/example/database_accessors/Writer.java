@@ -9,6 +9,20 @@ public class Writer extends DatabaseAccessor {
   private static final String MODIFIED_FLAG = "MODIFICADO";
   private ReaderWriter controller;
 
+  private void readerAndWriter(){
+    controller.write(database, index);
+    bdEsleep();
+    controller.stopWriting();
+  }
+
+  private void bdEsleep(){
+    try {
+      Thread.sleep(ThreadLocalRandom.current().nextInt(1, 100));
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public Writer(int i, List<String> database) {
     super(i, database);
   }
@@ -16,6 +30,8 @@ public class Writer extends DatabaseAccessor {
   @Override
   public void run() {
     System.out.println("Writer " + index + " started");
+
+    readerAndWriter();
 
     ThreadLocalRandom.current().ints(MAX_RUNS, 0, database.size())
         .forEach(this::writeToDatabaseInIndex);

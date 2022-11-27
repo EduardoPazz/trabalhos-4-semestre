@@ -33,7 +33,7 @@ public class ReaderWriter {
         activeReaders--;
     }
 
-    synchronized void write(List<String> database, int index) {
+    public synchronized void write(List<String> database, int index) {
         while (!writtingCondition()) {
             try {
                 Thread.sleep(1);
@@ -48,7 +48,7 @@ public class ReaderWriter {
         isOccupied = false;
     }
 
-    synchronized void stopWriting() {
+    public synchronized void stopWriting() {
         isOccupied = false;
     }
     
