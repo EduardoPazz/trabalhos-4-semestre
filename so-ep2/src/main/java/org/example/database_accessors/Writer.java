@@ -2,10 +2,12 @@ package org.example.database_accessors;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.example.reader_writer_solution.ReaderWriter;
 
 public class Writer extends DatabaseAccessor {
 
   private static final String MODIFIED_FLAG = "MODIFICADO";
+  private ReaderWriter controller;
 
   public Writer(int i, List<String> database) {
     super(i, database);

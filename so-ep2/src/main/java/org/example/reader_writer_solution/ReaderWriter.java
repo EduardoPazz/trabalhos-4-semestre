@@ -13,7 +13,7 @@ public class ReaderWriter {
         return !isOccupied;
     }
 
-    public void read(List<String> database, int index) {
+    public synchronized void read(List<String> database, int index) {
         while (!readingCondition()) {
             try {
                 Thread.sleep(1);
@@ -29,11 +29,11 @@ public class ReaderWriter {
         activeReaders--;
     }
 
-    public void stopReading() {
+    public synchronized void stopReading() {
         activeReaders--;
     }
 
-    public void write(List<String> database, int index) {
+    synchronized void write(List<String> database, int index) {
         while (!writtingCondition()) {
             try {
                 Thread.sleep(1);
@@ -48,7 +48,7 @@ public class ReaderWriter {
         isOccupied = false;
     }
 
-    public void stopWriting() {
+    synchronized void stopWriting() {
         isOccupied = false;
     }
     
