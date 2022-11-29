@@ -12,7 +12,7 @@ class Main {
   public static void main(String[] args) throws IOException {
     List<String> database = IOHelper.readDatabase();
     List<DatabaseAccessor> databaseAccessors = RandomnessHelper.getShuffledDatabaseAccessors(
-        database, 10);
+        database, 90);
 
     logOriginalOrder(databaseAccessors);
 
@@ -24,7 +24,7 @@ class Main {
     // TODO: Implement the parallel approach
     // Marcar termino da execucao
 
-    System.out.println(database);
+//    System.out.println(database);
   }
 
   private static void logOriginalOrder(
