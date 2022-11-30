@@ -42,12 +42,19 @@ public class SemaphoreHelper {
   }
 
   public static void useRC(Callback callback) throws InterruptedException {
-    upRC();
-    callback.run();
-    downRC();
+    switch (mode) {
+      case READER_PREFERENCE -> {
+        upRC();
+        callback.run();
+        downRC();
+      }
+      case BLOCKING -> useDB(callback);
+    }
   }
 
+  public static Mode mode = Mode.READER_PREFERENCE;
+
   public enum Mode {
-    BLOCKING, READER_WRITER
+    BLOCKING, READER_PREFERENCE
   }
 }
