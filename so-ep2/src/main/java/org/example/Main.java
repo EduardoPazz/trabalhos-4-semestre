@@ -35,7 +35,6 @@ class Main {
   }
 
   private static void naiveApproach(List<DatabaseAccessor> databaseAccessors) {
-    // TODO: Implement the naive approach
     databaseAccessors.forEach(DatabaseAccessor::start);
   }
 

@@ -2,7 +2,7 @@ package org.example.database_accessors;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import org.example.reader_writer_solution.Semaphore;
+import org.example.helpers.SemaphoreHelper;
 
 public class Writer extends DatabaseAccessor {
 
@@ -29,10 +29,16 @@ public class Writer extends DatabaseAccessor {
   }
 
   private void writeToDatabaseInIndex(int i) {
-    while(!db.tryAcquire()) {};
-    System.out.println("Writer " + index + " is accessing database at index " + i);
-    database.set(i, MODIFIED_FLAG);
-    System.out.println("Writer " + index + " finished accessing database at index " + i);
-    db.release();
+    try {
+      SemaphoreHelper.useDB(() -> {
+        System.out.println(
+            "Writer " + index + " is accessing database at index " + i);
+        database.set(i, MODIFIED_FLAG);
+        System.out.println(
+            "Writer " + index + " finished accessing database at index " + i);
+      });
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

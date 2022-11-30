@@ -2,11 +2,9 @@ package org.example.database_accessors;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import org.example.reader_writer_solution.Semaphore;
+import org.example.helpers.SemaphoreHelper;
 
 public class Reader extends DatabaseAccessor {
-
-  int rc = 0;
 
   public Reader(int index, List<String> database) {
     super(index, database);
@@ -29,10 +27,16 @@ public class Reader extends DatabaseAccessor {
   }
 
   private void readDatabaseInIndex(int i) {
-
-//    Semaphore.upRC(db);
-    System.out.println("Reader " + index + " is accessing database at index " + i);
-    @SuppressWarnings("unused") String aLocalVariable = database.get(i);
-//    Semaphore.downRC(db);
+    try {
+      SemaphoreHelper.useRC(() -> {
+        System.out.println(
+            "Reader " + index + " is accessing database at index " + i);
+        @SuppressWarnings("unused") String aLocalVariable = database.get(i);
+        System.out.println(
+            "Reader " + index + " finished accessing database at index " + i);
+      });
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
