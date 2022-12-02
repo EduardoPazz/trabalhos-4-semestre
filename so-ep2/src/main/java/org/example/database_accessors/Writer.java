@@ -14,8 +14,6 @@ public class Writer extends DatabaseAccessor {
 
   @Override
   public void run() {
-    System.out.println("Writer " + index + " started");
-
     ThreadLocalRandom.current().ints(MAX_RUNS, 0, database.size())
         .forEach(this::writeToDatabaseInIndex);
 
@@ -24,18 +22,12 @@ public class Writer extends DatabaseAccessor {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
-
-    System.out.println("Writer " + index + " finished");
   }
 
   private void writeToDatabaseInIndex(int i) {
     try {
       SemaphoreHelper.useDB(() -> {
-        System.out.println(
-            "Writer " + index + " is accessing database at index " + i);
         database.set(i, MODIFIED_FLAG);
-        System.out.println(
-            "Writer " + index + " finished accessing database at index " + i);
       });
     } catch (InterruptedException e) {
       throw new RuntimeException(e);

@@ -1,10 +1,11 @@
 package org.example;
 
+import static org.example.helpers.SemaphoreHelper.Mode.BLOCKING;
+import static org.example.helpers.SemaphoreHelper.Mode.READER_PREFERENCE;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.example.database_accessors.DatabaseAccessor;
 import org.example.helpers.IOHelper;
 import org.example.helpers.RandomnessHelper;
@@ -15,95 +16,81 @@ class Main {
   public static void main(String[] args) throws IOException {
     List<String> database = IOHelper.readDatabase();
 
-    int MAX_PROPORTIONS = 10;
-    int MAX_LOOPS = 2;
+    int MAX_PROPORTIONS = 100;
+    int MAX_LOOPS = 50;
 
-    long[][] blockingAproachArrayResults = new long[MAX_PROPORTIONS][MAX_LOOPS];
-    long[][] readerPreferenceApproachArrayResults = new long[MAX_PROPORTIONS][MAX_LOOPS];
+    long[][] blockingModeResults = new long[MAX_PROPORTIONS+1][MAX_LOOPS];
+    long[][] readerPreferenceModeResults = new long[MAX_PROPORTIONS+1][MAX_LOOPS];
 
+    // Run test cases in all proportions
+    for (int i = 0; i <= MAX_PROPORTIONS; i++) {
+      for (int j = 0; j < MAX_LOOPS; j++) {
+        // ***************** Blocking Mode *****************
 
-    for(int i = 0; i < MAX_PROPORTIONS;i++){
-
-      for(int j = 0; j < MAX_LOOPS; j++) {
-        System.out.println("Proporção " + i + "Execução: " + j);
-        List<String> localDatabase = new ArrayList<>(database);
-
-        List<DatabaseAccessor> databaseAccessorsBlockingApproach = RandomnessHelper.getShuffledDatabaseAccessors(
+        List<DatabaseAccessor> databaseAccessorsBlockingMode = RandomnessHelper.getShuffledDatabaseAccessors(
             database, i);
 
-        //logOriginalOrder(databaseAccessorsBlockingApproach);
-
         long startTime = System.currentTimeMillis();
-        blockingApproach(databaseAccessorsBlockingApproach);
 
-        databaseAccessorsBlockingApproach.forEach(x -> {
-          try {
-            x.join();
-          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-          }
-        });
+        runBlockingMode(databaseAccessorsBlockingMode);
+        joinAllThreads(databaseAccessorsBlockingMode);
 
         long delta = System.currentTimeMillis() - startTime;
 
-        blockingAproachArrayResults[i][j] = delta;
+        blockingModeResults[i][j] = delta;
 
+        // ***************** Reader Preference Mode *****************
 
-        List<DatabaseAccessor> databaseAccessorsReaderPreferenceApproachArrayResults= RandomnessHelper.getShuffledDatabaseAccessors(
+        List<DatabaseAccessor> databaseAccessorsReaderPreferenceMode = RandomnessHelper.getShuffledDatabaseAccessors(
             database, i);
 
         startTime = System.currentTimeMillis();
-        readerPreferenceApproach(databaseAccessorsReaderPreferenceApproachArrayResults);
 
-        databaseAccessorsReaderPreferenceApproachArrayResults.forEach(x -> {
-          try {
-            x.join();
-          } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-          }
-        });
+        runReaderPreferenceMode(databaseAccessorsReaderPreferenceMode);
+        joinAllThreads(databaseAccessorsReaderPreferenceMode);
 
         delta = System.currentTimeMillis() - startTime;
 
-        readerPreferenceApproachArrayResults[i][j] = delta;
+        readerPreferenceModeResults[i][j] = delta;
       }
     }
 
-    System.out.println("Blocking aproatch: ");
-    for(int i = 0; i < MAX_PROPORTIONS;i++)
-    {
-      System.out.println(i + ";" + Arrays.stream(blockingAproachArrayResults[i]).average().getAsDouble());
+    // Log out results
+    System.out.println("Blocking mode: \n\nreader_proportion,average_time");
+
+    for (int i = 0; i <= MAX_PROPORTIONS; i++) {
+      System.out.println(
+          i + "," + Arrays.stream(blockingModeResults[i]).average()
+              .getAsDouble());
     }
 
-    System.out.println();
-    System.out.println();
-    System.out.println("Reader preference aproatch: ");
-    for(int i = 0; i < MAX_PROPORTIONS;i++)
-    {
-      System.out.println(i + ";" + Arrays.stream(readerPreferenceApproachArrayResults[i]).average().getAsDouble());
+    System.out.println("\n\nReader Preference mode: \n\nreader_proportion,average_time");
+    for (int i = 0; i <= MAX_PROPORTIONS; i++) {
+      System.out.println(
+          i + "," + Arrays.stream(readerPreferenceModeResults[i]).average()
+              .getAsDouble());
     }
-
-//    System.out.println(database);
   }
 
-  private static void logOriginalOrder(
-      List<DatabaseAccessor> databaseAccessors) {
-    System.out.println("Original order: " + databaseAccessors.stream()
-        .map(databaseAccessor -> Integer.toString(databaseAccessor.getIndex()))
-        .collect(Collectors.joining(" ", "\n", "\n")));
+  private static void joinAllThreads(List<DatabaseAccessor> databaseAccessors) {
+    databaseAccessors.forEach(thread -> {
+      try {
+        thread.join();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    });
   }
 
-  private static void readerPreferenceApproach(
+  private static void runReaderPreferenceMode(
       List<DatabaseAccessor> databaseAccessors) {
-    SemaphoreHelper.mode = SemaphoreHelper.Mode.READER_PREFERENCE;
+    SemaphoreHelper.mode = READER_PREFERENCE;
     databaseAccessors.forEach(DatabaseAccessor::start);
   }
 
-  private static void blockingApproach(
+  private static void runBlockingMode(
       List<DatabaseAccessor> databaseAccessors) {
-    SemaphoreHelper.mode = SemaphoreHelper.Mode.BLOCKING;
+    SemaphoreHelper.mode = BLOCKING;
     databaseAccessors.forEach(DatabaseAccessor::start);
   }
-
-
 }

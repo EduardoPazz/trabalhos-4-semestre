@@ -12,8 +12,6 @@ public class Reader extends DatabaseAccessor {
 
   @Override
   public void run() {
-    System.out.println("Reader " + index + " started");
-
     ThreadLocalRandom.current().ints(MAX_RUNS, 0, database.size())
         .forEach(this::readDatabaseInIndex);
 
@@ -22,18 +20,12 @@ public class Reader extends DatabaseAccessor {
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
-
-    System.out.println("Reader " + index + " finished");
   }
 
   private void readDatabaseInIndex(int i) {
     try {
       SemaphoreHelper.useRC(() -> {
-        System.out.println(
-            "Reader " + index + " is accessing database at index " + i);
         @SuppressWarnings("unused") String aLocalVariable = database.get(i);
-        System.out.println(
-            "Reader " + index + " finished accessing database at index " + i);
       });
     } catch (InterruptedException e) {
       throw new RuntimeException(e);

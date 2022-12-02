@@ -7,6 +7,7 @@ public class SemaphoreHelper {
 
   private static final Semaphore db = new Semaphore(1);
   private static final Semaphore mutex = new Semaphore(1);
+  public static Mode mode = Mode.READER_PREFERENCE;
   private static int rc = 0;
 
   private static void upRC() throws InterruptedException {
@@ -51,8 +52,6 @@ public class SemaphoreHelper {
       case BLOCKING -> useDB(callback);
     }
   }
-
-  public static Mode mode = Mode.READER_PREFERENCE;
 
   public enum Mode {
     BLOCKING, READER_PREFERENCE
