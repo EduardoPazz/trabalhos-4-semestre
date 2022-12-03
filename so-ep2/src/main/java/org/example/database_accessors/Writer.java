@@ -1,21 +1,20 @@
 package org.example.database_accessors;
 
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import org.example.helpers.SemaphoreHelper;
+import org.example.db.DB;
 
 public class Writer extends DatabaseAccessor {
 
   private static final String MODIFIED_FLAG = "MODIFICADO";
 
-  public Writer(int i, List<String> database) {
+  public Writer(int i, DB database) {
     super(i, database);
   }
 
   @Override
   public void run() {
     ThreadLocalRandom.current().ints(MAX_RUNS, 0, database.size())
-        .forEach(this::writeToDatabaseInIndex);
+        .forEach(i -> database.set(i, MODIFIED_FLAG));
 
     try {
       sleep(1);
@@ -24,13 +23,4 @@ public class Writer extends DatabaseAccessor {
     }
   }
 
-  private void writeToDatabaseInIndex(int i) {
-    try {
-      SemaphoreHelper.useDB(() -> {
-        database.set(i, MODIFIED_FLAG);
-      });
-    } catch (InterruptedException e) {
-      throw new RuntimeException(e);
-    }
-  }
 }
