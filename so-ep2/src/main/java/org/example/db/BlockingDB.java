@@ -1,16 +1,14 @@
 package org.example.db;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BlockingDB implements DB {
+public class BlockingDB extends DB {
 
   private final ReentrantLock lock = new ReentrantLock(true);
-  private final List<String> list = new LinkedList<>();
 
-  public BlockingDB(List<String> initialElements) {
-    list.addAll(initialElements);
+  public BlockingDB(List<String> initialElements, ListImpl listImpl) {
+    super(initialElements, listImpl);
   }
 
   public void set(int index, String element) {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.example.database_accessors.DatabaseAccessor;
 import org.example.db.BlockingDB;
+import org.example.db.DB;
 import org.example.db.ReadPreferenceDB;
 import org.example.helpers.IOHelper;
 import org.example.helpers.RandomnessHelper;
@@ -12,6 +13,13 @@ import org.example.helpers.RandomnessHelper;
 class Main {
 
   public static void main(String[] args) throws IOException {
+    DB.ListImpl listImpl = switch (args[0]) {
+      case "array" -> DB.ListImpl.ARRAY_LIST;
+      case "linked" -> DB.ListImpl.LINKED_LIST;
+      default -> throw new IllegalArgumentException(
+          "Invalid list implementation: \"array\" or \"linked\" expected");
+    };
+
     List<String> database = IOHelper.readDatabase();
 
     int MAX_PROPORTIONS = 100;
@@ -24,7 +32,7 @@ class Main {
     // ***************** Blocking Mode *****************
     for (int i = 0; i <= MAX_PROPORTIONS; i++) {
       for (int j = 0; j < MAX_LOOPS; j++) {
-        BlockingDB localDatabase = new BlockingDB(database);
+        BlockingDB localDatabase = new BlockingDB(database, listImpl);
         List<DatabaseAccessor> databaseAccessorsBlockingMode = RandomnessHelper.getShuffledDatabaseAccessors(
             localDatabase, i);
 
@@ -42,7 +50,8 @@ class Main {
     // ***************** Reader Preference Mode *****************
     for (int i = 0; i <= MAX_PROPORTIONS; i++) {
       for (int j = 0; j < MAX_LOOPS; j++) {
-        ReadPreferenceDB localDatabase = new ReadPreferenceDB(database);
+        ReadPreferenceDB localDatabase = new ReadPreferenceDB(database,
+            listImpl);
         List<DatabaseAccessor> databaseAccessorsReaderPreferenceMode = RandomnessHelper.getShuffledDatabaseAccessors(
             localDatabase, i);
 
