@@ -1,11 +1,15 @@
 package org.example.view;
 
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Scanner;
 
+@Component
+@AllArgsConstructor
 public class View {
 
-  private final Scanner scanner = new Scanner(System.in);
+  private final Scanner scanner;
 
   public void mainMenu() {
     while (true) {
