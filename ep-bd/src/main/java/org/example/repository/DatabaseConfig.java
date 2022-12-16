@@ -247,8 +247,271 @@ public class DatabaseConfig {
         """);
   }
 
-  private static void createTriggers(Statement statement) {
-    System.out.println("Creating triggers...");
+  private static void createTriggers(Statement statement) throws SQLException {
+    ensureConflictsHierarchyExclusiveness(statement);
+    ensureThreeMilitaryChiefsPerDivisionAtMost(statement);
+    ensureTwoArmedGroupsPerConflictAtLeast(statement);
+    ensureKillsConsistency(statement);
+  }
+
+  private static void ensureConflictsHierarchyExclusiveness(
+      Statement statement) throws SQLException {
+    statement.execute("""
+        /*CRIACAO DA FUNCTION PARA VALIDACAO*/
+        CREATE OR REPLACE FUNCTION verificaExclusividadeConflito()
+        	RETURNS TRIGGER
+        	LANGUAGE PLPGSQL
+        	AS
+        $$
+        BEGIN
+        	/*VERIFICA SE O CONFLITO É EXCLUSIVO*/
+        	IF (NEW.FLAG_RACIAL = TRUE AND NEW.FLAG_TERRITORIAL = FALSE AND NEW.FLAG_RELIGIOSO = FALSE AND NEW.FLAG_ECONOMICO = FALSE) OR
+        		(NEW.FLAG_RACIAL = FALSE AND NEW.FLAG_TERRITORIAL = TRUE AND NEW.FLAG_RELIGIOSO = FALSE AND NEW.FLAG_ECONOMICO = FALSE) OR
+        		(NEW.FLAG_RACIAL = FALSE AND NEW.FLAG_TERRITORIAL = FALSE AND NEW.FLAG_RELIGIOSO = TRUE AND NEW.FLAG_ECONOMICO = FALSE) OR
+        		(NEW.FLAG_RACIAL = FALSE AND NEW.FLAG_TERRITORIAL = FALSE AND NEW.FLAG_RELIGIOSO = FALSE AND NEW.FLAG_ECONOMICO = TRUE)
+        	THEN
+        		/*RETORNA OK SE ESTIVER DE ACORDO COM A VALIDACAO ACIMA*/
+        		RETURN NEW;
+        	ELSE
+        		/*RETORNA ERRO SE NAO ESTIVER DE ACORDO COM A VALIDACAO ACIMA*/
+        		RAISE EXCEPTION 'CONFLITO NÃO É EXCLUSIVO';
+        	END IF;
+
+        END;
+        $$;
+
+        /*CRIACAO DE TRIGGER*/
+
+        CREATE TRIGGER verificaExclusividadeConflito
+        	BEFORE INSERT
+        	ON CONFLITO
+        	FOR EACH ROW
+        	EXECUTE PROCEDURE verificaExclusividadeConflito();
+        """);
+  }
+
+  private static void ensureThreeMilitaryChiefsPerDivisionAtMost(
+      Statement statement) throws SQLException {
+    statement.execute("""
+        /*CRIACAO DA FUNCTION PARA VALIDACAO*/
+        CREATE OR REPLACE FUNCTION validaQuantidadeChefesPorDivisao()
+        	RETURNS TRIGGER
+        	LANGUAGE PLPGSQL
+        	AS
+        $$
+        BEGIN
+        	/*VARIAVEL DE CONTAGEM DE CHEFES MILITARES*/
+        	DECLARE
+           		counter    INTEGER;
+
+        	BEGIN
+        		/*BUSCA A QUANTIDADE DE CHEFES MILITARES QUE ESTÃO CONTIDOS NA DIVISAO DO NOVO CHEFE MILITAR QUE SERA INSERIDO*/
+        		SELECT COUNT(1) INTO counter FROM DIVISAO
+        			JOIN CHEFE_MILITAR ON CHEFE_MILITAR.CODIGO_DIVISAO = DIVISAO.CODIGO
+        		WHERE
+        			DIVISAO.CODIGO = NEW.CODIGO_DIVISAO;
+
+        		/*SE HOUVER ATÉ 2 MILITARES, É PERMITIDO INSERIR ATÉ O TERCEIRO, SE HOUVER MAIS DE 2, RETORNA ERRO*/
+        		IF (counter <= 2)
+        		THEN
+        			RETURN NEW;
+        		ELSE
+        			RAISE EXCEPTION 'DIVISÃO JÁ POSSUI 3 CHEFES MILITARES. NÃO É POSSÍVEL INSERIR UM NOVO CHEFE MILITAR A ESTA DIVISÃO';
+        		END IF;
+        	END;
+
+        END;
+        $$;
+
+        /*CRIACAO DE TRIGGER*/
+        CREATE TRIGGER validaQuantidadeChefesPorDivisao
+        	BEFORE INSERT
+        	ON CHEFE_MILITAR
+        	FOR EACH ROW
+        	EXECUTE PROCEDURE validaQuantidadeChefesPorDivisao();
+        """);
+  }
+
+  private static void ensureTwoArmedGroupsPerConflictAtLeast(
+      Statement statement) throws SQLException {
+    statement.execute("""
+        /*CRIACAO DA FUNCTION PARA VALIDACAO*/
+        CREATE OR REPLACE FUNCTION validaQuantidadeGruposArmadosPorConflito()
+        	RETURNS TRIGGER
+        	LANGUAGE PLPGSQL
+        	AS
+        $$
+        BEGIN
+
+        	/*VARIAVEL DE CONTAGEM DE GRUPOS ARMADOS*/
+        	DECLARE
+           		counter    INTEGER;
+
+        	BEGIN
+
+        		/*VERIFICA SE ANTES DO UPDATE A DATA_SAIDA ERA NULA E DEPOS ELA FOI PREENCHIDA,
+        		CASO SIM, É NECESSÁRIO FAZER A VALIDACAO*/
+        		IF (OLD.DATA_SAIDA IS NULL AND NEW.DATA_SAIDA IS NOT NULL) THEN
+
+        			/*CONTABILIZA QUANTOS GRUPOS ARMADOS AINDA
+        			ESTAO ENVOLVIDOS NO CONFLITO DO GRUPO ARMADO QUE TERÁ A DATA DE SAIDA PREENCHIDA*/
+        			SELECT COUNT(1) INTO counter FROM GRUPOS_ARMADOS_ENVOLVIDOS
+        			WHERE GRUPOS_ARMADOS_ENVOLVIDOS.CODIGO_CONFLITO = NEW.CODIGO_CONFLITO
+        				AND GRUPOS_ARMADOS_ENVOLVIDOS.DATA_SAIDA IS NULL;
+
+        			/*SE AINDA HOUVER MAIS DE DOIS GRUPOS ARMADOS ENVOLVIDOS, PODE ATUALIZAR A DATA DE SAIDA DO GRUPO ARMADO ATUAL
+        			CASO CONTRARIO, ENVIA MENSAGEM DE ERRO*/
+        			IF (counter > 2)
+        			THEN
+        				RETURN NEW;
+        			ELSE
+        				RAISE EXCEPTION 'O GRUPO ARMADO NÃO PODE SAIR DO CONFLITO POIS O CONFLITO FICARÁ APENAS COM UM GRUPO ARMADO REGISTRADO';
+        			END IF;
+
+        		/*SE FOI ATUALIZADO QUALQUER OUTRO DADO QUE NÃO SEJA A DATA DE SAIDA, ATUALIZA NORMALMENTE*/
+        		ELSE
+        			RETURN NEW;
+        		END IF;
+        	END;
+
+        END;
+        $$;
+
+        /*CRIACAO DE TRIGGER*/
+        CREATE TRIGGER validaQuantidadeGruposArmadosPorConflito
+        	BEFORE UPDATE
+        	ON GRUPOS_ARMADOS_ENVOLVIDOS
+        	FOR EACH ROW
+        	EXECUTE PROCEDURE validaQuantidadeGruposArmadosPorConflito();
+        """);
+  }
+
+  private static void ensureKillsConsistency(Statement statement)
+      throws SQLException {
+    statement.execute("""
+        /*CRIACAO DA FUNCTION PARA SOMA DAS BAIXAS DA DIVISAO NO GRUPO ARMADO*/
+        CREATE OR REPLACE FUNCTION atualizaNrBaixasGrupoArmadoInsert()
+        	RETURNS TRIGGER
+        	LANGUAGE PLPGSQL
+        	AS
+        $$
+        BEGIN
+        	/*VARIAVEL DE SOMA DE BAIXAS*/
+        	DECLARE
+           		sum    INTEGER;
+
+        	BEGIN
+        		/*SOMA TODAS AS BAIXAS DO GRUPO ARMADO COM A DA DIVISAO NOVA*/
+        		sum := NEW.NR_BAIXAS +
+        		NEW.NR_SOLDADOS +
+        		NEW.NR_AVIOES +
+        		NEW.NR_BARCOS +
+        		NEW.NR_TANQUES +
+        		(SELECT NR_BAIXAS FROM GRUPO_ARMADO WHERE GRUPO_ARMADO.CODIGO = NEW.CODIGO_GRUPO_ARMADO);
+
+        		/*ATUALIZA O NUMERO DE BAIXAS DO GRUPO ARMADO DA DIVISAO*/
+        		UPDATE GRUPO_ARMADO SET NR_BAIXAS = sum WHERE GRUPO_ARMADO.CODIGO = NEW.CODIGO_GRUPO_ARMADO;
+
+        		RETURN NEW;
+        	END;
+
+        END;
+        $$
+
+        /*CRIACAO DE TRIGGER*/
+
+        CREATE TRIGGER atualizaNrBaixasGrupoArmadoInsert
+        	BEFORE INSERT
+        	ON DIVISAO
+        	FOR EACH ROW
+        	EXECUTE PROCEDURE atualizaNrBaixasGrupoArmadoInsert();
+
+
+
+
+
+
+
+
+        /*CRIACAO DA FUNCTION PARA SUBTRACAO DAS BAIXAS DA DIVISAO NO GRUPO ARMADO*/
+        CREATE OR REPLACE FUNCTION atualizaNrBaixasGrupoArmadoDelete()
+        	RETURNS TRIGGER
+        	LANGUAGE PLPGSQL
+        	AS
+        $$
+        BEGIN
+        	/*VARIAVEL DE SOMA DE BAIXAS*/
+        	DECLARE
+           		sum    INTEGER;
+
+        	BEGIN
+        		/*SOMA TODAS AS BAIXAS DA DIVISAO E SUBTRAI DO GRUPO ARMADO*/
+        		sum :=
+        		(SELECT NR_BAIXAS FROM GRUPO_ARMADO WHERE GRUPO_ARMADO.CODIGO = OLD.CODIGO_GRUPO_ARMADO) -
+        		(OLD.NR_BAIXAS +
+        		OLD.NR_SOLDADOS +
+        		OLD.NR_AVIOES +
+        		OLD.NR_BARCOS +
+        		OLD.NR_TANQUES);
+
+        		/*ATUALIZA O NUMERO DE BAIXAS DO GRUPO ARMADO DA DIVISAO*/
+        		UPDATE GRUPO_ARMADO SET NR_BAIXAS = sum WHERE GRUPO_ARMADO.CODIGO = OLD.CODIGO_GRUPO_ARMADO;
+
+        		RETURN OLD;
+        	END;
+
+        END;
+        $$
+
+        /*CRIACAO DE TRIGGER*/
+
+        CREATE TRIGGER atualizaNrBaixasGrupoArmadoDelete
+        	BEFORE DELETE
+        	ON DIVISAO
+        	FOR EACH ROW
+        	EXECUTE PROCEDURE atualizaNrBaixasGrupoArmadoDelete();
+
+
+
+
+
+        /*CRIACAO DA FUNCTION PARA ADICAO OU SUBTRACAO DAS BAIXAS DA DIVISAO NO GRUPO ARMADO*/
+        CREATE OR REPLACE FUNCTION atualizaNrBaixasGrupoArmadoUpdate()
+        	RETURNS TRIGGER
+        	LANGUAGE PLPGSQL
+        	AS
+        $$
+        BEGIN
+        	/*VARIAVEL DE SOMA DE BAIXAS*/
+        	DECLARE
+           		sum    INTEGER;
+
+        	BEGIN
+        		/*CALCULA A DIFERENCA DAS BAIXAS QUE EXISTIAM PARA AS NOVAS E SOMA COM AS DO GRUPO ARMADO*/
+        		sum :=
+        		(SELECT NR_BAIXAS FROM GRUPO_ARMADO WHERE GRUPO_ARMADO.CODIGO = OLD.CODIGO_GRUPO_ARMADO) +
+        		(NEW.NR_BAIXAS - OLD.NR_BAIXAS) +
+        		(NEW.NR_SOLDADOS - OLD.NR_SOLDADOS) +
+        		(NEW.NR_AVIOES - OLD.NR_AVIOES) +
+        		(NEW.NR_BARCOS - OLD.NR_BARCOS) +
+        		(NEW.NR_TANQUES - OLD.NR_TANQUES);
+
+        		/*ATUALIZA O NUMERO DE BAIXAS DO GRUPO ARMADO DA DIVISAO*/
+        		UPDATE GRUPO_ARMADO SET NR_BAIXAS = sum WHERE GRUPO_ARMADO.CODIGO = OLD.CODIGO_GRUPO_ARMADO;
+
+        		RETURN NEW;
+        	END;
+
+        END;
+        $$
+
+        /*CRIACAO DE TRIGGER*/
+        CREATE TRIGGER atualizaNrBaixasGrupoArmadoUpdate
+        	BEFORE UPDATE
+        	ON DIVISAO
+        	FOR EACH ROW
+        	EXECUTE PROCEDURE atualizaNrBaixasGrupoArmadoUpdate();
+        """);
   }
 
   private static void populateTables(Statement statement) {
