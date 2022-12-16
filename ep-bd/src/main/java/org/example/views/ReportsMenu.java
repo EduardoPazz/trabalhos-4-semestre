@@ -22,7 +22,7 @@ class ReportsMenu {
       String chosenOption = getValidInputWithOptions(scanner, """
           \n*** Conflitos Belicos - Graficos e Relatorios ***
           [1] - Grafico: Tipo de Conflito x Numero de Conflitos
-          [2] - Relatorio: Traficantes e Grupos Armados cuja armas fornecidas sao "Barret M82" ou "Intervention"
+          [2] - Relatorio: Traficantes e Grupos Armados cuja armas fornecidas sao "Barret M82" ou "M200 Intervention"
           [3] - Relatorio: 5 maiores conflitos em numero de mortos
           [4] - Relatorio: 5 maiores organizacoes em numero de mediacoes
           [5] - Relatorio: 5 maiores grupos armados com maior numero de armas fornecidos
