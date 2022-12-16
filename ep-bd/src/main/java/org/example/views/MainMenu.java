@@ -19,7 +19,7 @@ public class MainMenu {
   public void run() {
     while (true) {
       String chosenOption = getValidInputWithOptions(scanner, """
-          \n*** Conflitos Belicos ***
+          \n*** Conflitos Belicos - Menu Principal ***
           [1] - Fazer novos cadastros
           [2] - Gerar relatorios e graficos
           [Q] - Sair do programa
