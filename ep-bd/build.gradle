@@ -11,10 +11,6 @@ application {
   mainClassName = 'org.example.Main'
 }
 
-repositories {
-  mavenCentral()
-}
-
 jar {
   manifest {
     attributes(
@@ -23,7 +19,15 @@ jar {
   }
 }
 
+repositories {
+  mavenCentral()
+}
+
 dependencies {
   // https://mvnrepository.com/artifact/org.springframework/spring-context
   implementation 'org.springframework:spring-context:5.3.24'
+
+  // https://mvnrepository.com/artifact/org.postgresql/postgresql
+  implementation 'org.postgresql:postgresql:42.5.1'
+
 }
