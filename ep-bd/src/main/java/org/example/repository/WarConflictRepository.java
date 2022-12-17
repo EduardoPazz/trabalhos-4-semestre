@@ -47,6 +47,17 @@ public class WarConflictRepository {
         """, columns);
   }
 
+  public String[][] selectTop5Mediators(String[] columns) {
+    return select("""
+        select o.nome as "Nome Organização", count(codigo_conflito) as "Número de conflitos"
+        from organizacoes_envolvidas oe
+        join organizacao o on o.codigo = oe.codigo_organizacao
+        group by o.nome
+        order by "Número de conflitos" desc
+        limit 5;
+        """, columns);
+  }
+
   public String[][] selectReligiousConflicts(String[] columns) {
     return select("""
         select paises_afetados.nome as "País", count(codigo) as "Número de Conflitos"

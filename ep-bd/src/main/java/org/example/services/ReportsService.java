@@ -25,7 +25,9 @@ public class ReportsService {
   }
 
   public void printTop5MediatorsReport() {
-    System.out.println("NAO IMPLEMENTADO");
+    String[] columns = {"Nome Organização", "Número de Conflitos"};
+
+    printReport(repository::selectTop5Mediators, columns);
   }
 
   public void printTop5ArmedGroupsReport() {
