@@ -41,7 +41,7 @@ docker-compose up
 ### Baixando as dependências e compilando o projeto com Gradle
 
 ```bash
-./gradlew shadowJar && java -jar build/libs/ep-db-1.0-SNAPSHOT-all.jar
+./gradlew shadowJar
 ```
 
 ### Executando o projeto
