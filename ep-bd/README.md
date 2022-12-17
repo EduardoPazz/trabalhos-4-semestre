@@ -30,9 +30,9 @@ Para executar o projeto, é necessário ter uma instância do PostgreSQL executa
 | Port         | 5432       |
 | Database     | ep_db      |
 | User         | ep_db_user |
-| Password     | ep_db_pass |
+| Password     | 1234       |
 
-Para facilitar a configuração de tal banco de dados, é fornecido um [docker-compose.yml](docker-compose.yml). Para executá-lo, basta ter o `docker-compose` habilitado executar o seguinte comando na pasta raiz do projeto, através de um terminal:
+Para facilitar a configuração de tal banco de dados, é fornecido um [docker-compose.yml](docker-compose.yml). Para executá-lo, basta ter o `docker-compose` habilitado e executar o seguinte comando na pasta raiz do projeto, através de um terminal:
 
 ```bash
 docker-compose up
@@ -64,6 +64,8 @@ O projeto irá configurar e popular o banco de dados apenas na primeira execuç�
 
 O projeto foi desenvolvido usando o SGBD PostgreSQL e a linguagem de programação Java em sua versão 17 incluindo, além de algumas bibliotecas nativas, as seguintes bibliotecas externas:
 
+- Lombok: para reduzir código _boilerplate_.
+- Shadow: para gerar um único arquivo JAR com todas as dependências.
 - Spring Context: para facilitar a injeção de dependência.
 - PostgreSQL JDBC Driver: para se conectar com o banco de dados.
 - Java Text Utilities: para formatar tabelas.
@@ -98,7 +100,6 @@ Cada classe da Views lida com um menu em específico. A `MainMenu` é a que est�
       }
     }
   }
-
 ```
 
 
@@ -137,3 +138,5 @@ Toda a conexão e setup inicial das tabelas do banco de dados estão na classe `
 ```
 
 Os scripts de criação de tabelas podem ser encontrados no método `DatabaseConfig.createTables`, os scripts de criação de triggers no método `DatabaseConfig.createTriggers` e os scripts de inserção de dados de teste no método `DatabaseConfig.populateTables`.
+
+Os dados inseridos através de `populateTables` são meramente para fins de teste de geração dos relatórios e gráficos.
