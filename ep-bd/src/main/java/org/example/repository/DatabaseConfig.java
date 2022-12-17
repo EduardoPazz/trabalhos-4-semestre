@@ -22,6 +22,7 @@ public class DatabaseConfig {
   }
 
   public static void setup() throws SQLException {
+    System.out.println("Setting up database...");
     var connection = databaseConnection();
 
     var statement = connection.createStatement();
@@ -30,6 +31,7 @@ public class DatabaseConfig {
       boolean hasAlreadySetup = isDatabaseAlreadySetup(statement);
 
       if (hasAlreadySetup) {
+        System.out.println("Database already setup");
         return;
       }
 
@@ -51,6 +53,7 @@ public class DatabaseConfig {
   }
 
   private static void createTables(Statement statement) throws SQLException {
+    System.out.println("Creating tables...");
     statement.execute("""
         BEGIN;
 
@@ -248,6 +251,7 @@ public class DatabaseConfig {
   }
 
   private static void createTriggers(Statement statement) throws SQLException {
+    System.out.println("Creating triggers...");
     ensureConflictsHierarchyExclusiveness(statement);
     ensureThreeMilitaryChiefsPerDivisionAtMost(statement);
     ensureTwoArmedGroupsPerConflictAtLeast(statement);
@@ -416,7 +420,7 @@ public class DatabaseConfig {
         	END;
 
         END;
-        $$
+        $$;
 
         /*CRIACAO DE TRIGGER*/
 
@@ -461,7 +465,7 @@ public class DatabaseConfig {
         	END;
 
         END;
-        $$
+        $$;
 
         /*CRIACAO DE TRIGGER*/
 
@@ -503,7 +507,7 @@ public class DatabaseConfig {
         	END;
 
         END;
-        $$
+        $$;
 
         /*CRIACAO DE TRIGGER*/
         CREATE TRIGGER atualizaNrBaixasGrupoArmadoUpdate
