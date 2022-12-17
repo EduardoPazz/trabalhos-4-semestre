@@ -37,6 +37,12 @@ Para facilitar a configuração de tal banco de dados, é fornecido um [docker-c
 ```bash
 docker-compose up
 ```
+ou
+```bash
+sudo docker-compose up
+```
+
+caso o sistema exija privilégios de administrador.
 
 ### Baixando as dependências e compilando o projeto com Gradle
 
@@ -49,7 +55,7 @@ docker-compose up
 Uma vez que o projeto esteja compilado, basta executar o seguinte comando:
 
 ```bash
-java -jar build/libs/ep-db-1.0-SNAPSHOT-all.jar
+java -jar build/libs/ep-bd-1.0-SNAPSHOT-all.jar
 ```
 
 O projeto irá configurar e popular o banco de dados apenas na primeira execução.
