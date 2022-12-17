@@ -17,7 +17,7 @@ public class WarConflictRepository {
 
   private final Connection connection;
 
-  public String[][] selectDealersAndArmedGroups(String... columns) {
+  public String[][] selectDealersAndArmedGroups(String[] columns) {
     return select("""
         select *, grupo_armado.nome
         from fornecimento_armas
@@ -27,12 +27,24 @@ public class WarConflictRepository {
         """, columns);
   }
 
-  public String[][] selectTop5DeadliestConflicts(String... columns) {
+  public String[][] selectTop5DeadliestConflicts(String[] columns) {
     return select("""
         select *
         from conflito
         order by nr_mortos desc
         limit 5;
+        """, columns);
+  }
+
+  public String[][] selectReligiousConflicts(String[] columns) {
+    return select("""
+        select paises_afetados.nome as "País", count(codigo) as "Número de Conflitos"
+        from paises_afetados
+        join conflito
+        on paises_afetados.codigo_conflito = conflito.codigo and conflito.flag_religioso = true
+        group by "País"
+        order by "Número de Conflitos" desc
+        limit 1;
         """, columns);
   }
 

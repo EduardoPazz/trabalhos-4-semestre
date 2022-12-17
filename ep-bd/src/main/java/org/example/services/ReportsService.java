@@ -33,7 +33,9 @@ public class ReportsService {
   }
 
   public void printReligiousConflictsReport() {
-    System.out.println("NAO IMPLEMENTADO");
+    String[] columns = {"País", "Número de Conflitos"};
+
+    printReport(repository::selectReligiousConflicts, columns);
   }
 
   private void printReport(Function<String[], String[][]> selector, String[] columns) {
