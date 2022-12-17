@@ -23,7 +23,8 @@ public class WarConflictRepository {
         from fornecimento_armas
         join grupo_armado
         on fornecimento_armas.codigo_grupo_armado = grupo_armado.codigo
-        where nome_tipo_arma = 'Barret M82' or nome_tipo_arma = 'M200 intervention';
+        where nome_tipo_arma = 'Barret M82' or nome_tipo_arma = 'M200 intervention'
+        order by nome_tipo_arma, nome_traficante, grupo_armado.nome
         """, columns);
   }
 
