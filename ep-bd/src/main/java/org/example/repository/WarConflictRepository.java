@@ -29,9 +29,19 @@ public class WarConflictRepository {
 
   public String[][] selectTop5DeadliestConflicts(String[] columns) {
     return select("""
-        select *
+        select nome as "Nome Conflito", nr_mortos as "Número de Mortos"
         from conflito
         order by nr_mortos desc
+        limit 5;
+        """, columns);
+  }
+
+  public String[][] selectTop5ArmedGroups(String[] columns) {
+    return select("""
+        select nome as "Nome Grupo Armado", count(nome_tipo_arma) as "Número de Armas" from fornecimento_armas
+        join grupo_armado on fornecimento_armas.codigo_grupo_armado = grupo_armado.codigo
+        group by nome
+        order by "Número de Armas" desc
         limit 5;
         """, columns);
   }

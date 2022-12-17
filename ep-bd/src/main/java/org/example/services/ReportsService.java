@@ -19,7 +19,7 @@ public class ReportsService {
   }
 
   public void printTop5DeadliestConflictsReport() {
-    String[] columns = {"nome", "nr_mortos"};
+    String[] columns = {"Nome Conflito", "Número de Mortos"};
 
     printReport(repository::selectTop5DeadliestConflicts, columns);
   }
@@ -29,7 +29,9 @@ public class ReportsService {
   }
 
   public void printTop5ArmedGroupsReport() {
-    System.out.println("NAO IMPLEMENTADO");
+    String[] columns = {"Nome Grupo Armado", "Número de Armas"};
+
+    printReport(repository::selectTop5ArmedGroups, columns);
   }
 
   public void printReligiousConflictsReport() {
