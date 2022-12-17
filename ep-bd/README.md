@@ -71,6 +71,49 @@ O projeto foi desenvolvido usando o SGBD PostgreSQL e a linguagem de programaç�
 - Java Text Utilities: para formatar tabelas.
 - TODO: biblioteca dos gráficos
 
+### Configuração do Banco de Dados
+
+Toda a conexão e setup inicial das tabelas do banco de dados estão na classe `org.example.repository.DatabaseConfig`:
+
+```java
+  public static void setup() throws SQLException {
+    System.out.println("Setting up database...");
+    var connection = databaseConnection();
+
+    var statement = connection.createStatement();
+
+    try (statement) {
+      boolean hasAlreadySetup = isDatabaseAlreadySetup(statement);
+
+      if (hasAlreadySetup) {
+        System.out.println("Database already setup");
+        return;
+      }
+
+      createTables(statement);
+      createTriggers(statement);
+      populateTables(statement);
+    }
+  }
+```
+
+Os scripts de criação de tabelas podem ser encontrados no método `DatabaseConfig.createTables`, os scripts de criação de triggers no método `DatabaseConfig.createTriggers` e os scripts de inserção de dados de teste no método `DatabaseConfig.populateTables`.
+
+Os dados inseridos através de `populateTables` são meramente para fins de teste de geração dos relatórios e gráficos.
+
+#### Dados de teste necessários para o cadastro de novos registros:
+
+##### Grupos Armados
+
+|codigo|nome          |
+|------|--------------|
+|1     |PCC           |
+|2     |Máfia Russa   |
+|3     |Tropa de Elite|
+|4     |Máfia Italiana|
+|5     |Máfia Chinesa |
+|6     |Máfia Japonesa|
+
 ### Arquitetura
 
 As responsabilidades do projeto foram divididas em três camadas:
@@ -110,33 +153,3 @@ TODO
 #### Repositories
 
 TODO
-
-### Configuração do Banco de Dados
-
-Toda a conexão e setup inicial das tabelas do banco de dados estão na classe `org.example.repository.DatabaseConfig`:
-
-```java
-  public static void setup() throws SQLException {
-    System.out.println("Setting up database...");
-    var connection = databaseConnection();
-
-    var statement = connection.createStatement();
-
-    try (statement) {
-      boolean hasAlreadySetup = isDatabaseAlreadySetup(statement);
-
-      if (hasAlreadySetup) {
-        System.out.println("Database already setup");
-        return;
-      }
-
-      createTables(statement);
-      createTriggers(statement);
-      populateTables(statement);
-    }
-  }
-```
-
-Os scripts de criação de tabelas podem ser encontrados no método `DatabaseConfig.createTables`, os scripts de criação de triggers no método `DatabaseConfig.createTriggers` e os scripts de inserção de dados de teste no método `DatabaseConfig.populateTables`.
-
-Os dados inseridos através de `populateTables` são meramente para fins de teste de geração dos relatórios e gráficos.
