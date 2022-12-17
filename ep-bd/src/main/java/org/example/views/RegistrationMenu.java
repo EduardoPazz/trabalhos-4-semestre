@@ -13,6 +13,7 @@ import static org.example.views.ViewHelpers.getValidInputWithOptions;
 class RegistrationMenu {
 
   private final Scanner scanner;
+  private final Registration registration;
 
   void run() {
     registrationMenuWhile:
@@ -28,7 +29,7 @@ class RegistrationMenu {
           """, List.of("1", "2", "3", "4", "5", "Q"));
 
       switch (chosenOption) {
-        case "1" -> System.out.println("Not implemented yet");
+        case "1" -> registration.registerArmedGroupDivision();
         case "2" -> System.out.println("Not implemented yet");
         case "3" -> System.out.println("Not implemented yet");
         case "4" -> System.out.println("Not implemented yet");

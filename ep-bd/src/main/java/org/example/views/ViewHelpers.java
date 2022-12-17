@@ -10,8 +10,8 @@ class ViewHelpers {
     System.exit(0);
   }
 
-  static String getValidInputWithOptions(final Scanner scanner, final String message,
-      final List<String> validOptions) {
+  static String getValidInputWithOptions(final Scanner scanner,
+      final String message, final List<String> validOptions) {
 
     System.out.println(message);
 
@@ -23,5 +23,10 @@ class ViewHelpers {
     }
 
     return input;
+  }
+
+  static String getInput(final Scanner scanner, final String message) {
+    System.out.print(message);
+    return scanner.nextLine();
   }
 }
