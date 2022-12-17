@@ -19,7 +19,7 @@ public class WarConflictRepository {
 
   public String[][] selectDealersAndArmedGroups(String[] columns) {
     return select("""
-        select *, grupo_armado.nome
+        select nome_traficante as "Nome Traficante", grupo_armado.nome as "Nome Grupo Armado", nome_tipo_arma as "Nome Arma"
         from fornecimento_armas
         join grupo_armado
         on fornecimento_armas.codigo_grupo_armado = grupo_armado.codigo

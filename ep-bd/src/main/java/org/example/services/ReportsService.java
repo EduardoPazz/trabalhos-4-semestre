@@ -13,7 +13,7 @@ public class ReportsService {
   private final WarConflictRepository repository;
 
   public void printDealersAndArmedGroupsReport() {
-    String[] columns = {"grupo_armado.nome", "nome_traficante"};
+    String[] columns = {"Nome Traficante", "Nome Grupo Armado", "Nome Arma"};
 
     printReport(repository::selectDealersAndArmedGroups, columns);
   }
