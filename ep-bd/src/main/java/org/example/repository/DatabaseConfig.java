@@ -518,8 +518,175 @@ public class DatabaseConfig {
         """);
   }
 
-  private static void populateTables(Statement statement) {
+  private static void populateTables(Statement statement) throws SQLException {
     System.out.println("Populating tables...");
+    statement.execute("""
+        -- Conflitos
+
+        insert into conflito (nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico)
+        select 'Conflito ' || i, random() * 1000000, random() * 1000000, true, false, false, false
+        from generate_series(1, 25) i;
+
+        insert into conflito (nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico)
+        select 'Conflito ' || i, random() * 1000000, random() * 1000000, false, true, false, false
+        from generate_series(26, 30) i;
+
+        insert into conflito (nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico)
+        select 'Conflito ' || i, random() * 1000000, random() * 1000000, false, false, true, false
+        from generate_series(31, 60) i;
+
+        insert into conflito (nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico)
+        select 'Conflito ' || i, random() * 1000000, random() * 1000000, false, false, false, true
+        from generate_series(60, 70) i;
+
+
+        -- Paises afetados
+        insert into paises_afetados (codigo_conflito, nome)
+        values (56, 'Brasil');
+        insert into paises_afetados (codigo_conflito, nome)
+        values (57, 'Brasil');
+        insert into paises_afetados (codigo_conflito, nome)
+        values (58, 'Brasil');
+        insert into paises_afetados (codigo_conflito, nome)
+        values (59, 'Argentina');
+        insert into paises_afetados (codigo_conflito, nome)
+        values (60, 'Argentina');
+        insert into paises_afetados (codigo_conflito, nome)
+        values (61, 'Argentina');
+
+
+        -- Tráfico
+
+        insert into traficante
+        values ('Pablo Escobar');
+        insert into traficante
+        values ('El Chapo');
+        insert into traficante
+        values ('Nicolas Cage');
+
+        insert into grupo_armado (nome)
+        values ('PCC');
+        insert into grupo_armado (nome)
+        values ('Máfia Russa');
+        insert into grupo_armado (nome)
+        values ('Tropa de Elite');
+        insert into grupo_armado (nome)
+        values ('Máfia Italiana');
+        insert into grupo_armado (nome)
+        values ('Máfia Chinesa');
+        insert into grupo_armado (nome)
+        values ('Máfia Japonesa');
+
+        insert into tipo_arma
+        values ('AK47', 10);
+        insert into tipo_arma
+        values ('M16', 15);
+        insert into tipo_arma
+        values ('Desert Eagle', 5);
+        insert into tipo_arma
+        values ('Barret M82', 12);
+        insert into tipo_arma
+        values ('M200 intervention', 50);
+
+        insert into fornecimento_armas
+        values (1, 'AK47', 'Nicolas Cage');
+        insert into fornecimento_armas
+        values (2, 'AK47', 'Nicolas Cage');
+        insert into fornecimento_armas
+        values (3, 'AK47', 'Nicolas Cage');
+        insert into fornecimento_armas
+        values (1, 'Barret M82', 'Nicolas Cage');
+        insert into fornecimento_armas
+        values (1, 'Barret M82', 'Pablo Escobar');
+        insert into fornecimento_armas
+        values (2, 'Barret M82', 'Pablo Escobar');
+        insert into fornecimento_armas
+        values (3, 'M200 intervention', 'Pablo Escobar');
+        insert into fornecimento_armas
+        values (4, 'M200 intervention', 'Pablo Escobar');
+        insert into fornecimento_armas
+        values (4, 'Barret M82', 'Pablo Escobar');
+        insert into fornecimento_armas
+        values (5, 'M200 intervention', 'Nicolas Cage');
+        insert into fornecimento_armas
+        values (5, 'Desert Eagle', 'Nicolas Cage');
+        insert into fornecimento_armas
+        values (5, 'AK47', 'El Chapo');
+        insert into fornecimento_armas
+        values (5, 'AK47', 'Pablo Escobar');
+        insert into fornecimento_armas
+        values (6, 'Desert Eagle', 'Nicolas Cage');
+
+        -- Mediacoes
+
+        insert into organizacao (nome, tipo)
+        values ('ONU', 'INTERNACIONAL');
+        insert into organizacao (nome, tipo)
+        values ('UNICEF', 'INTERNACIONAL');
+        insert into organizacao (nome, tipo)
+        values ('UNESCO', 'INTERNACIONAL');
+        insert into organizacao (nome, tipo)
+        values ('Governo Brasileiro', 'GOVERNAMENTAL');
+        insert into organizacao (nome, tipo)
+        values ('OTAN', 'INTERNACIONAL');
+        insert into organizacao (nome, tipo)
+        values ('Rotary Club', 'NÃO GOVERNAMENTAL');
+
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (1, 1, 1000000, 'MÉDICA', '2010-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (2, 1, 1000000, 'MÉDICA', '2010-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (3, 1, 1000000, 'MÉDICA', '2010-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (4, 1, 1000000, 'MÉDICA', '2010-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (5, 1, 1000000, 'MÉDICA', '2010-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (1, 2, 3346, 'DIPLOMÁTICA', '2014-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (2, 3, 3346, 'DIPLOMÁTICA', '2014-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (3, 3, 3346, 'DIPLOMÁTICA', '2014-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (1, 4, 3346, 'DIPLOMÁTICA', '2014-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (2, 4, 3346, 'DIPLOMÁTICA', '2014-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (3, 4, 3346, 'DIPLOMÁTICA', '2014-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (4, 5, 6666, 'PRESENCIAL', '2009-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (4, 6, 6666, 'PRESENCIAL', '2009-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (1, 6, 6666, 'PRESENCIAL', '2009-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (2, 6, 6666, 'PRESENCIAL', '2009-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (3, 6, 6666, 'PRESENCIAL', '2009-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (6, 6, 6666, 'PRESENCIAL', '2009-01-01');
+        insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
+                                             data_incorporacao)
+        values (10, 6, 6666, 'PRESENCIAL', '2009-01-01');
+        """);
   }
 
 }
