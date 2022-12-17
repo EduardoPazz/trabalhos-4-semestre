@@ -30,4 +30,6 @@ dependencies {
   // https://mvnrepository.com/artifact/org.postgresql/postgresql
   implementation 'org.postgresql:postgresql:42.5.1'
 
+  // https://mvnrepository.com/artifact/com.massisframework/j-text-utils
+  implementation 'com.massisframework:j-text-utils:0.3.4'
 }

@@ -1,9 +1,10 @@
 package org.example.services;
 
+import dnl.utils.text.table.TextTable;
 import lombok.AllArgsConstructor;
 import org.example.repository.WarConflictRepository;
 import org.springframework.stereotype.Component;
-import java.util.List;
+import java.util.function.Function;
 
 @Component
 @AllArgsConstructor
@@ -12,13 +13,15 @@ public class ReportsService {
   private final WarConflictRepository repository;
 
   public void printDealersAndArmedGroupsReport() {
-    System.out.println("SEMI IMPLEMENTADO");
-    List<List<String>> lists = repository.selectDealersAndArmedGroups();
-    System.out.println(lists);
+    String[] columns = {"grupo_armado.nome", "nome_traficante"};
+
+    printReport(repository::selectDealersAndArmedGroups, columns);
   }
 
   public void printTop5DeadliestConflictsReport() {
-    System.out.println("NAO IMPLEMENTADO");
+    String[] columns = {"nome", "nr_mortos"};
+
+    printReport(repository::selectTop5DeadliestConflicts, columns);
   }
 
   public void printTop5MediatorsReport() {
@@ -31,5 +34,11 @@ public class ReportsService {
 
   public void printReligiousConflictsReport() {
     System.out.println("NAO IMPLEMENTADO");
+  }
+
+  private void printReport(Function<String[], String[][]> selector, String[] columns) {
+    String[][] result = selector.apply(columns);
+
+    new TextTable(columns, result).printTable();
   }
 }
