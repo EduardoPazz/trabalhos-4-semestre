@@ -30,7 +30,7 @@ class RegistrationMenu {
 
       switch (chosenOption) {
         case "1" -> registration.registerArmedGroupDivision();
-        case "2" -> System.out.println("Not implemented yet");
+        case "2" -> registration.registerWarConflict();
         case "3" -> System.out.println("Not implemented yet");
         case "4" -> System.out.println("Not implemented yet");
         case "5" -> System.out.println("Not implemented yet");
