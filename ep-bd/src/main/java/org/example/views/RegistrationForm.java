@@ -34,6 +34,19 @@ class RegistrationForm {
   }
 
   public void registerWarConflict() {
+    register(() -> {
+      String nome = getInput(scanner, "nome: ");
+      String nr_mortos = getInput(scanner, "nr_mortos: ");
+      String nr_feridos = getInput(scanner, "nr_feridos: ");
+      String flag_racial = getInput(scanner, "flag_racial: ");
+      String flag_territorial = getInput(scanner, "flag_territorial: ");
+      String flag_religioso = getInput(scanner, "flag_religioso: ");
+      String flag_economico = getInput(scanner, "flag_economico: ");
+
+      boolean success = service.registerWarConflict(nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico);
+
+      return success;
+    });
   }
 
   private void register(Supplier<Boolean> registrationFunction) {

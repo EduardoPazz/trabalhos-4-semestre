@@ -19,6 +19,12 @@ public class WarConflictInsertionRepository {
         values);
   }
 
+  public void insertWarConflict(Object... values) throws Exception {
+    insert(
+        "insert into conflito (nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico) VALUES (?,?,?,?,?,?,?);",
+        values);
+  }
+
   private void insert(String query, Object[] values) throws Exception {
     PreparedStatement preparedStatement = connection.prepareStatement(query);
 
