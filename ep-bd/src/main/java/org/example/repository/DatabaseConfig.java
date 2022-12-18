@@ -277,6 +277,7 @@ public class DatabaseConfig {
     ensureThreeMilitaryChiefsPerDivisionAtMost(statement);
     ensureTwoArmedGroupsPerConflictAtLeast(statement);
     ensureKillsConsistency(statement);
+    ensureKillsConsistencyOnGrupoArmadoOperations(statement);
   }
 
   private static void ensureConflictsHierarchyExclusiveness(
@@ -491,6 +492,67 @@ public class DatabaseConfig {
             FOR EACH ROW
         EXECUTE PROCEDURE atualizaNrBaixasGrupoArmadoUpdate();
         """);
+  }
+
+
+  private static void ensureKillsConsistencyOnGrupoArmadoOperations(Statement statement)
+      throws SQLException {
+      statement.execute("""
+            CREATE OR REPLACE FUNCTION validarNrBaixasGrupoArmadoNoUpdate()
+                RETURNS TRIGGER
+                LANGUAGE PLPGSQL
+            AS
+            $$
+            BEGIN
+                DECLARE
+                    sum_numero_baixas INTEGER;
+                BEGIN
+                    SELECT SUM(COALESCE(NR_BAIXAS,0)) INTO sum_numero_baixas  FROM DIVISAO
+                    WHERE DIVISAO.CODIGO_GRUPO_ARMADO = NEW.CODIGO;
+
+                    IF(sum_numero_baixas <> NEW.NR_BAIXAS)
+                    THEN
+                         RAISE EXCEPTION 'O VALOR DE NÚMERO DE BAIXAS DO GRUPO ARMADO NÃO É IGUAL À SOMA DE NÚMERO DE BAIXAS DAS DIVISÕES';
+                    ELSE
+                        RETURN NEW;
+                    END IF;
+
+                END;
+
+            END;
+            $$;
+
+
+            CREATE TRIGGER validarNrBaixasGrupoArmadoNoUpdate
+                BEFORE UPDATE
+                OR INSERT
+                ON GRUPO_ARMADO
+                FOR EACH ROW
+            EXECUTE PROCEDURE validarNrBaixasGrupoArmadoNoUpdate();
+
+
+
+            CREATE OR REPLACE FUNCTION validarInsertGrupoArmadoParaNaoPreencherNumeroDeBaixas()
+                RETURNS TRIGGER
+                LANGUAGE PLPGSQL
+            AS
+            $$
+            BEGIN
+                IF(COALESCE(NEW.NR_BAIXAS,0) <> 0)
+                THEN
+                    RAISE EXCEPTION 'O VALOR DE NÚMERO DE BAIXAS DEVE SER IGUAL À 0 NO MOMENTO DA INSERÇÃO DO GRUPO ARMADO';
+                ELSE
+                    RETURN NEW;
+                END IF;
+            END;
+            $$;
+
+            CREATE TRIGGER validarInsertGrupoArmadoParaNaoPreencherNumeroDeBaixas
+                BEFORE INSERT
+                ON GRUPO_ARMADO
+                FOR EACH ROW
+            EXECUTE PROCEDURE validarInsertGrupoArmadoParaNaoPreencherNumeroDeBaixas();
+          """);
   }
 
   private static void populateTables(Statement statement) throws SQLException {
