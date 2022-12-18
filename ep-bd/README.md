@@ -46,6 +46,8 @@ caso o sistema exija privilégios de administrador.
 
 ### Baixando as dependências e compilando o projeto com Gradle
 
+Não é necessário ter o Gradle instalado. O projeto já possui um wrapper universal para o Gradle, que pode ser executado através do seguinte comando:
+
 ```bash
 ./gradlew shadowJar
 ```
@@ -148,8 +150,16 @@ Cada classe da Views lida com um menu em específico. A `MainMenu` é a que est�
 
 #### Services
 
-TODO
+A camada Services, que se encontra no pacote `org.example.services`, é responsável por fazer a comunicação entre a Views e a Repositories.
+
+A classe `services.RegistrationService` é responsável por fazer a conversão de dados para que sejam compatíveis com o banco de dados.
+
+Já as classes `services.ReportsService` e `services.ChartsService` são responsáveis por gerar as tabelas e gráficos.
 
 #### Repositories
 
-TODO
+A camada Repositories é responsável pela abstração da conexão com o banco de dados e sua manipulação com SQL. Ela se encontra no pacote `org.example.repository`.
+
+A classe `WarConflictSelectionRepository` é responsável por buscar tuplas do banco de dados por meio de `SELECT`s e retornar os dados como matrizes de `String` para a camada Services.
+
+A classe `WarConflictInsertionRepository` é responsável por inserir novas tuplas no banco de dados por meio de `INSERT`s com base nos dados validados pela camada Services.
