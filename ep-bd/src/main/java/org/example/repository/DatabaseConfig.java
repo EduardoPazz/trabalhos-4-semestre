@@ -79,7 +79,7 @@ public class DatabaseConfig {
         (
             CODIGO    INT          NOT NULL GENERATED ALWAYS AS IDENTITY,
             NOME      VARCHAR(100) NOT NULL,
-            NR_BAIXAS INT,
+            NR_BAIXAS INT DEFAULT 0,
             PRIMARY KEY (CODIGO)
         );
 
