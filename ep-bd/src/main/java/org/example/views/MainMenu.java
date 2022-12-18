@@ -3,6 +3,7 @@ package org.example.views;
 import static org.example.views.ViewHelpers.getValidInputWithOptions;
 import static org.example.views.ViewHelpers.quit;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ public class MainMenu {
   private final ReportsMenu reportsMenu;
   private final RegistrationMenu registrationMenu;
 
-  public void run() {
+  public void run() throws IOException {
     while (true) {
       String chosenOption = getValidInputWithOptions(scanner, """
           \n*** Conflitos Belicos - Menu Principal ***
