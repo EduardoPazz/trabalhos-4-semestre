@@ -2,7 +2,7 @@ package org.example.services;
 
 import dnl.utils.text.table.TextTable;
 import lombok.AllArgsConstructor;
-import org.example.repository.WarConflictRepository;
+import org.example.repository.WarConflictSelectionRepository;
 import org.springframework.stereotype.Component;
 import java.util.function.Function;
 
@@ -10,7 +10,7 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class ReportsService {
 
-  private final WarConflictRepository repository;
+  private final WarConflictSelectionRepository repository;
 
   public void printDealersAndArmedGroupsReport() {
     String[] columns = {"Nome Traficante", "Nome Grupo Armado", "Nome Arma"};

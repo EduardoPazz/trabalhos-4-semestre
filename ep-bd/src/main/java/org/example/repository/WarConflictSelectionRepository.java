@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 @AllArgsConstructor
-public class WarConflictRepository {
+public class WarConflictSelectionRepository {
 
   private final Connection connection;
 

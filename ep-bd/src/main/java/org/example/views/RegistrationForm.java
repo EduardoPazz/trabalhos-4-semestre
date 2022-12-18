@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-class Registration {
+class RegistrationForm {
 
   private final Scanner scanner;
   private final RegistrationService service;
@@ -28,7 +28,8 @@ class Registration {
       String nr_tanques = getInput(scanner, "nr_tanques: ");
       String codigo_grupo_armado = getInput(scanner, "codigo_grupo_armado: ");
 
-      boolean success = service.registerArmedGroupDivision();
+      boolean success = service.registerArmedGroupDivision(nr_baixas,
+          nr_soldados, nr_avioes, nr_barcos, nr_tanques, codigo_grupo_armado);
 
       String message =
           success ? "Deseja cadastrar novamente?" : "Deseja tentar novamente?";

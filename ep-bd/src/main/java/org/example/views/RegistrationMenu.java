@@ -13,7 +13,7 @@ import static org.example.views.ViewHelpers.getValidInputWithOptions;
 class RegistrationMenu {
 
   private final Scanner scanner;
-  private final Registration registration;
+  private final RegistrationForm registration;
 
   void run() {
     registrationMenuWhile:
