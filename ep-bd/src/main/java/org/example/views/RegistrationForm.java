@@ -74,6 +74,19 @@ class RegistrationForm {
     });
   }
 
+  public void registerMilitaryLeader() {
+    register(() -> {
+      String faixa_hierarquica = getInput(scanner, "faixa_hierarquica: ");
+      String nome_lider_politico = getInput(scanner, "nome_lider_politico: ");
+      String codigo_divisao = getInput(scanner, "codigo_divisao: ");
+
+      boolean success = service.registerMilitaryLeader(faixa_hierarquica,
+          nome_lider_politico, codigo_divisao);
+
+      return success;
+    });
+  }
+
   private void register(Supplier<Boolean> registrationFunction) {
     while (true) {
       System.out.println(

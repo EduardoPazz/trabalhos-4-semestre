@@ -65,6 +65,16 @@ public class RegistrationService {
     return success;
   }
 
+  public boolean registerMilitaryLeader(String faixa_hierarquica, String nome_lider_politico, String codigo_divisao) {
+    Integer parsedFaixaHierarquica = parseInteger(faixa_hierarquica);
+    String parsedNomeLiderPolitico = parseString(nome_lider_politico);
+    Integer parsedCodigoDivisao = parseInteger(codigo_divisao);
+
+    boolean success = register(repository::insertMilitaryLeader, parsedFaixaHierarquica, parsedNomeLiderPolitico, parsedCodigoDivisao);
+
+    return success;
+  }
+
   private boolean register(RegistrationFunction registrationFunction,
       Object... values) {
     try {

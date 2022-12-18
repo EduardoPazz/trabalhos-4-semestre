@@ -20,13 +20,13 @@ public class WarConflictInsertionRepository {
         values);
   }
 
-  public void insertWarConflict(Object... values) throws Exception {
+  public void insertWarConflict(Object[] values) throws Exception {
     insert(
         "insert into conflito (nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico) VALUES (?,?,?,?,?,?,?);",
         values);
   }
 
-  public void insertPoliticalLeader(Object... values) throws Exception {
+  public void insertPoliticalLeader(Object[] values) throws Exception {
     insert(
         "insert into lider_politico (nome, descricao_apoio, codigo_grupo_armado) VALUES (?,?,?);",
         values);
@@ -35,6 +35,12 @@ public class WarConflictInsertionRepository {
 
   public void insertArmedGroup(Object[] values) throws Exception {
     insert("insert into grupo_armado (nome) VALUES (?);", values);
+  }
+
+  public void insertMilitaryLeader(Object[] values) throws Exception {
+    insert(
+        "insert into chefe_militar (faixa_hierarquica, nome_lider_politico, codigo_divisao) VALUES (?,?,?);",
+        values);
   }
 
   private void insert(String query, Object[] values) throws Exception {

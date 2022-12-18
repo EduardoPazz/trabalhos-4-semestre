@@ -13,7 +13,7 @@ import static org.example.views.ViewHelpers.getValidInputWithOptions;
 class RegistrationMenu {
 
   private final Scanner scanner;
-  private final RegistrationForm registration;
+  private final RegistrationForm registrationForm;
 
   void run() {
     registrationMenuWhile:
@@ -29,11 +29,11 @@ class RegistrationMenu {
           """, List.of("1", "2", "3", "4", "5", "Q"));
 
       switch (chosenOption) {
-        case "1" -> registration.registerArmedGroupDivision();
-        case "2" -> registration.registerWarConflict();
-        case "3" -> registration.registerArmedGroup();
-        case "4" -> registration.registerPoliticalLeader();
-        case "5" -> System.out.println("Not implemented yet");
+        case "1" -> registrationForm.registerArmedGroupDivision();
+        case "2" -> registrationForm.registerWarConflict();
+        case "3" -> registrationForm.registerArmedGroup();
+        case "4" -> registrationForm.registerPoliticalLeader();
+        case "5" -> registrationForm.registerMilitaryLeader();
         case "Q" -> {
           break registrationMenuWhile;
         }
