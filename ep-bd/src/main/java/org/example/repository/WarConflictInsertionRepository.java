@@ -1,11 +1,12 @@
 package org.example.repository;
 
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.stream.IntStream;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
@@ -25,6 +26,17 @@ public class WarConflictInsertionRepository {
         values);
   }
 
+  public void insertPoliticalLeader(Object... values) throws Exception {
+    insert(
+        "insert into lider_politico (nome, descricao_apoio, codigo_grupo_armado) VALUES (?,?,?);",
+        values);
+
+  }
+
+  public void insertArmedGroup(Object[] values) throws Exception {
+    insert("insert into grupo_armado (nome) VALUES (?);", values);
+  }
+
   private void insert(String query, Object[] values) throws Exception {
     PreparedStatement preparedStatement = connection.prepareStatement(query);
 
@@ -40,5 +52,4 @@ public class WarConflictInsertionRepository {
       preparedStatement.executeUpdate();
     }
   }
-
 }

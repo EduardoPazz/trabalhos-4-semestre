@@ -31,8 +31,8 @@ class RegistrationMenu {
       switch (chosenOption) {
         case "1" -> registration.registerArmedGroupDivision();
         case "2" -> registration.registerWarConflict();
-        case "3" -> System.out.println("Not implemented yet");
-        case "4" -> System.out.println("Not implemented yet");
+        case "3" -> registration.registerArmedGroup();
+        case "4" -> registration.registerPoliticalLeader();
         case "5" -> System.out.println("Not implemented yet");
         case "Q" -> {
           break registrationMenuWhile;

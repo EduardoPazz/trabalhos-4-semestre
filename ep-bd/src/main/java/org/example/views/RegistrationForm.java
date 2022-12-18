@@ -1,14 +1,15 @@
 package org.example.views;
 
-import static org.example.views.ViewHelpers.getInput;
-import static org.example.views.ViewHelpers.getValidInputWithOptions;
+import lombok.AllArgsConstructor;
+import org.example.services.RegistrationService;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Supplier;
-import lombok.AllArgsConstructor;
-import org.example.services.RegistrationService;
-import org.springframework.stereotype.Component;
+
+import static org.example.views.ViewHelpers.getInput;
+import static org.example.views.ViewHelpers.getValidInputWithOptions;
 
 @Component
 @AllArgsConstructor
@@ -43,7 +44,31 @@ class RegistrationForm {
       String flag_religioso = getInput(scanner, "flag_religioso: ");
       String flag_economico = getInput(scanner, "flag_economico: ");
 
-      boolean success = service.registerWarConflict(nome, nr_mortos, nr_feridos, flag_racial, flag_territorial, flag_religioso, flag_economico);
+      boolean success = service.registerWarConflict(nome, nr_mortos, nr_feridos,
+          flag_racial, flag_territorial, flag_religioso, flag_economico);
+
+      return success;
+    });
+  }
+
+  public void registerArmedGroup() {
+    register(() -> {
+      String nome = getInput(scanner, "nome: ");
+
+      boolean success = service.registerArmedGroup(nome);
+
+      return success;
+    });
+  }
+
+  public void registerPoliticalLeader() {
+    register(() -> {
+      String nome = getInput(scanner, "nome: ");
+      String descricao_apoio = getInput(scanner, "descricao_apoio: ");
+      String codigo_grupo_armado = getInput(scanner, "codigo_grupo_armado: ");
+
+      boolean success = service.registerPoliticalLeader(nome, descricao_apoio,
+          codigo_grupo_armado);
 
       return success;
     });
