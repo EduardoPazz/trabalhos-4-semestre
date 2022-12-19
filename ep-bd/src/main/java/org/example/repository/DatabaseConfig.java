@@ -1,13 +1,14 @@
 package org.example.repository;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DatabaseConfig {
@@ -277,10 +278,11 @@ public class DatabaseConfig {
     ensureThreeMilitaryChiefsPerDivisionAtMost(statement);
     ensureTwoArmedGroupsPerConflictAtLeast(statement);
     ensureKillsConsistency(statement);
+    ensureKillsConsistencyOnGrupoArmadoOperations(statement);
   }
 
-  private static void ensureConflictsHierarchyExclusiveness(
-      Statement statement) throws SQLException {
+  private static void ensureConflictsHierarchyExclusiveness(Statement statement)
+      throws SQLException {
     statement.execute("""
         /*CRIACAO DA FUNCTION PARA VALIDACAO*/
         CREATE OR REPLACE FUNCTION verificaExclusividadeConflito()
@@ -414,8 +416,7 @@ public class DatabaseConfig {
   private static void ensureKillsConsistency(Statement statement)
       throws SQLException {
     statement.execute("""
-        /*CRIACAO DA FUNCTION PARA SOMA DAS BAIXAS DA DIVISAO NO GRUPO ARMADO*/
-        CREATE OR REPLACE FUNCTION atualizaNrBaixasGrupoArmadoInsert()
+        CREATE OR REPLACE FUNCTION atualizaNrBaixasGrupoArmado()
             RETURNS TRIGGER
             LANGUAGE PLPGSQL
         AS
@@ -423,73 +424,78 @@ public class DatabaseConfig {
 
         BEGIN
             UPDATE GRUPO_ARMADO
-            SET NR_BAIXAS = grupo_armado.nr_baixas + new.nr_baixas
-            WHERE GRUPO_ARMADO.CODIGO = NEW.CODIGO_GRUPO_ARMADO;
-
-            RETURN NEW;
+            SET NR_BAIXAS = (SELECT SUM(divisao.nr_baixas)
+                             FROM DIVISAO
+                             WHERE DIVISAO.CODIGO_GRUPO_ARMADO = grupo_armado.codigo);
+            RETURN NULL;
         END;
         $$;
 
-
-        /*CRIACAO DE TRIGGER*/
-
-        CREATE TRIGGER atualizaNrBaixasGrupoArmadoInsert
-            BEFORE INSERT
+        CREATE TRIGGER validarNrBaixasGrupoArmado
+            AFTER INSERT OR UPDATE OR DELETE
             ON DIVISAO
-            FOR EACH ROW
-        EXECUTE PROCEDURE atualizaNrBaixasGrupoArmadoInsert();
+        EXECUTE PROCEDURE atualizaNrBaixasGrupoArmado();
+        """);
+  }
+
+
+  private static void ensureKillsConsistencyOnGrupoArmadoOperations(
+      Statement statement) throws SQLException {
+    statement.execute("""
+          CREATE OR REPLACE FUNCTION validarNrBaixasGrupoArmadoNoUpdate()
+              RETURNS TRIGGER
+              LANGUAGE PLPGSQL
+          AS
+          $$
+          BEGIN
+              DECLARE
+                  sum_numero_baixas INTEGER;
+              BEGIN
+                  SELECT SUM(COALESCE(NR_BAIXAS,0)) INTO sum_numero_baixas  FROM DIVISAO
+                  WHERE DIVISAO.CODIGO_GRUPO_ARMADO = NEW.CODIGO;
+
+                  IF(sum_numero_baixas <> NEW.NR_BAIXAS)
+                  THEN
+                       RAISE EXCEPTION 'O VALOR DE NÚMERO DE BAIXAS DO GRUPO ARMADO NÃO É IGUAL À SOMA DE NÚMERO DE BAIXAS DAS DIVISÕES';
+                  ELSE
+                      RETURN NEW;
+                  END IF;
+
+              END;
+
+          END;
+          $$;
+
+
+          CREATE TRIGGER validarNrBaixasGrupoArmadoNoUpdate
+              BEFORE UPDATE
+              OR INSERT
+              ON GRUPO_ARMADO
+              FOR EACH ROW
+          EXECUTE PROCEDURE validarNrBaixasGrupoArmadoNoUpdate();
 
 
 
-        /*CRIACAO DA FUNCTION PARA SUBTRACAO DAS BAIXAS DA DIVISAO NO GRUPO ARMADO*/
-        CREATE OR REPLACE FUNCTION atualizaNrBaixasGrupoArmadoDelete()
-            RETURNS TRIGGER
-            LANGUAGE PLPGSQL
-        AS
-        $$
-        BEGIN
+          CREATE OR REPLACE FUNCTION validarInsertGrupoArmadoParaNaoPreencherNumeroDeBaixas()
+              RETURNS TRIGGER
+              LANGUAGE PLPGSQL
+          AS
+          $$
+          BEGIN
+              IF(COALESCE(NEW.NR_BAIXAS,0) <> 0)
+              THEN
+                  RAISE EXCEPTION 'O VALOR DE NÚMERO DE BAIXAS DEVE SER IGUAL À 0 NO MOMENTO DA INSERÇÃO DO GRUPO ARMADO';
+              ELSE
+                  RETURN NEW;
+              END IF;
+          END;
+          $$;
 
-            UPDATE GRUPO_ARMADO
-            SET NR_BAIXAS = grupo_armado.nr_baixas - old.nr_baixas
-            WHERE GRUPO_ARMADO.CODIGO = OLD.CODIGO_GRUPO_ARMADO;
-
-            RETURN OLD;
-        END;
-        $$;
-
-        /*CRIACAO DE TRIGGER*/
-
-        CREATE TRIGGER atualizaNrBaixasGrupoArmadoDelete
-            BEFORE DELETE
-            ON DIVISAO
-            FOR EACH ROW
-        EXECUTE PROCEDURE atualizaNrBaixasGrupoArmadoDelete();
-
-
-
-        /*CRIACAO DA FUNCTION PARA ADICAO OU SUBTRACAO DAS BAIXAS DA DIVISAO NO GRUPO ARMADO*/
-        CREATE OR REPLACE FUNCTION atualizaNrBaixasGrupoArmadoUpdate()
-            RETURNS TRIGGER
-            LANGUAGE PLPGSQL
-        AS
-        $$
-        BEGIN
-
-            UPDATE GRUPO_ARMADO
-            SET nr_baixas = grupo_armado.nr_baixas - old.nr_baixas + new.nr_baixas
-            WHERE GRUPO_ARMADO.CODIGO = OLD.CODIGO_GRUPO_ARMADO;
-
-            RETURN NEW;
-
-        END;
-        $$;
-
-        /*CRIACAO DE TRIGGER*/
-        CREATE TRIGGER atualizaNrBaixasGrupoArmadoUpdate
-            BEFORE UPDATE
-            ON DIVISAO
-            FOR EACH ROW
-        EXECUTE PROCEDURE atualizaNrBaixasGrupoArmadoUpdate();
+          CREATE TRIGGER validarInsertGrupoArmadoParaNaoPreencherNumeroDeBaixas
+              BEFORE INSERT
+              ON GRUPO_ARMADO
+              FOR EACH ROW
+          EXECUTE PROCEDURE validarInsertGrupoArmadoParaNaoPreencherNumeroDeBaixas();
         """);
   }
 
@@ -661,6 +667,18 @@ public class DatabaseConfig {
         insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
                                              data_incorporacao)
         values (10, 6, 6666, 'PRESENCIAL', '2009-01-01');
+
+        -- Politicos e divisoes
+        insert into lider_politico
+        values ('Lula', 'Presidente do Brasil', 1);
+        insert into lider_politico
+        values ('Bolsonaro', 'Genocida', 3);
+
+        insert into divisao (nr_baixas, nr_soldados, nr_avioes, nr_barcos, nr_tanques, codigo_grupo_armado)
+        values (10, 11, 12, 13, 14, 1);
+
+        insert into divisao (nr_baixas, nr_soldados, nr_avioes, nr_barcos, nr_tanques, codigo_grupo_armado)
+        values (15, 11, 12, 13, 14, 1);
         """);
   }
 

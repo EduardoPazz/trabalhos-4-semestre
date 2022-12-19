@@ -14,9 +14,9 @@
 | Nome                      | NUSP     |
 |---------------------------|----------|
 | João Eduardo da Paz Silva | 11845514 |
-| Ryan ||
-| Vinicius ||
-| Silas ||
+| Ryan                      ||
+| Vinicius                  ||
+| Silas                     ||
 
 ## Como executar
 
@@ -107,14 +107,29 @@ Os dados inseridos através de `populateTables` são meramente para fins de test
 
 ##### Grupos Armados
 
-|codigo|nome          |
-|------|--------------|
-|1     |PCC           |
-|2     |Máfia Russa   |
-|3     |Tropa de Elite|
-|4     |Máfia Italiana|
-|5     |Máfia Chinesa |
-|6     |Máfia Japonesa|
+| codigo | nome           |
+|--------|----------------|
+| 1      | PCC            |
+| 2      | Máfia Russa    |
+| 3      | Tropa de Elite |
+| 4      | Máfia Italiana |
+| 5      | Máfia Chinesa  |
+| 6      | Máfia Japonesa |
+
+##### Lider Politico
+| nome      | descricao_apoio      | codigo_grupo_armado |
+|-----------|----------------------|---------------------|
+| Lula      | Presidente do Brasil | 1                   |
+| Bolsonaro | Genocida             | 3                   |
+
+
+
+##### Divisao de Grupo Armado
+| codigo | nr_baixas | nr_soldados | nr_avioes | nr_barcos | nr_tanques | codigo_grupo_armado |
+|--------|-----------|-------------|-----------|-----------|------------|---------------------|
+| 1      | 10        | 11          | 12        | 13        | 14         | 1                   |
+| 2      | 15        | 11          | 12        | 13        | 14         | 1                   |
+
 
 ### Arquitetura
 
