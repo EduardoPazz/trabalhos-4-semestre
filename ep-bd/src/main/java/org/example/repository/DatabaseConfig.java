@@ -1,13 +1,14 @@
 package org.example.repository;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DatabaseConfig {
@@ -666,6 +667,18 @@ public class DatabaseConfig {
         insert into organizacoes_envolvidas (codigo_conflito, codigo_organizacao, nr_pessoas_mantidas, tipo_ajuda,
                                              data_incorporacao)
         values (10, 6, 6666, 'PRESENCIAL', '2009-01-01');
+
+        -- Politicos e divisoes
+        insert into lider_politico
+        values ('Lula', 'Presidente do Brasil', 1);
+        insert into lider_politico
+        values ('Bolsonaro', 'Genocida', 3);
+
+        insert into divisao (nr_baixas, nr_soldados, nr_avioes, nr_barcos, nr_tanques, codigo_grupo_armado)
+        values (10, 11, 12, 13, 14, 1);
+
+        insert into divisao (nr_baixas, nr_soldados, nr_avioes, nr_barcos, nr_tanques, codigo_grupo_armado)
+        values (15, 11, 12, 13, 14, 1);
         """);
   }
 
