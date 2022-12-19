@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import static org.example.views.ViewHelpers.getInput;
 import static org.example.views.ViewHelpers.getValidInputWithOptions;
@@ -87,12 +87,12 @@ class RegistrationForm {
     });
   }
 
-  private void register(Supplier<Boolean> registrationFunction) {
+  private void register(BooleanSupplier registrationFunction) {
     while (true) {
       System.out.println(
           "\nPreencha os dados a seguir. Digite apenas enter para deixar algum campo em branco.\n");
 
-      boolean success = registrationFunction.get();
+      boolean success = registrationFunction.getAsBoolean();
 
       String message =
           success ? "Deseja cadastrar novamente?" : "Deseja tentar novamente?";
