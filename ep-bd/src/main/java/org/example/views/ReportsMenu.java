@@ -17,7 +17,7 @@ class ReportsMenu {
   private final ChartsService chartsService;
   private final ReportsService reportsService;
 
-  void run() throws IOException {
+  void run(){
     reportsMenuWhile:
     while (true) {
       String chosenOption = getValidInputWithOptions(scanner, """

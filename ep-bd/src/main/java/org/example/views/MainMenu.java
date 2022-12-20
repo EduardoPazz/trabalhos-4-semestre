@@ -17,7 +17,7 @@ public class MainMenu {
   private final ReportsMenu reportsMenu;
   private final RegistrationMenu registrationMenu;
 
-  public void run() throws IOException {
+  public void run(){
     while (true) {
       String chosenOption = getValidInputWithOptions(scanner, """
           \n*** Conflitos Belicos - Menu Principal ***

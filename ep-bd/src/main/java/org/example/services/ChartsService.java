@@ -1,43 +1,39 @@
 package org.example.services;
 
-import org.jfree.chart.ChartUtils;
+import org.example.services.graphic.BarChart;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.stereotype.Component;
 import lombok.AllArgsConstructor;
 import org.example.repository.WarConflictRepository;
-import java.beans.beancontext.BeanContextChild;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Function;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.statistics.HistogramDataset;
+import javax.swing.*;
 
 @Component
 @AllArgsConstructor
-public class ChartsService {
-  private final String[]racial = {"racial"};
-  private final String[]economico = {"economico"};
-  private final String[]territorial = {"territorial"};
-  private final String[]religioso = {"religioso"};
+public class ChartsService{
+
+  private static final String[] columns = {"Religioso", "Territorial", "Economico", "Racial"};
+  private static final String fileName= "./histograma.png";
+  private static final String title = "Números de Conflitpos X Tipo de Conflito";
+  private static final String categoryLabel = "Tipo de Conflito";
+  private static final String valueLabel= "Número de Conflitos";
+
   private final WarConflictRepository repository;
-
-  public void generateConflictTypeVsNumberOfConflictsChart()
-      throws IOException {
-//    System.out.println("NAO IMPLEMENTADO: Conflict type vs number of conflicts chart");
-    String[][] racialReport = getReport(repository::selectCountRacialConflicts, racial);
-    String[][] economicReport = getReport(repository::selectCountEconomicConflicts, economico);
-    String[][] territorialReport = getReport(repository::selectCountTerritorialConflicts, territorial);
-    String[][] religiousReport = getReport(repository::selectCountReligiousConflicts, religioso);
-
-    double[] racialData = TransformSelectToDoubleArray(racialReport);
-    double[] economicData = TransformSelectToDoubleArray(economicReport);
-    double[] territorialData = TransformSelectToDoubleArray(territorialReport);
-    double[] religiousData = TransformSelectToDoubleArray(religiousReport);
-
-    createChart(new double[][]{racialData, economicData, territorialData, religiousData} );
+  public void generateConflictTypeVsNumberOfConflictsChart(){
+    String[][] values = repository.selectConflictTypeVsNumberOfConflicts(columns);
+    double[] data = transformSelectToDoubleArray(values);
+    DefaultCategoryDataset dataset = createDataSet(data);
+    BarChart barChart = new BarChart(title, categoryLabel, valueLabel, dataset);
+    barChart.setSize(800, 400);
+    barChart.setLocationRelativeTo(null);
+    barChart.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    barChart.setVisible(true);
 
   }
 
@@ -45,22 +41,27 @@ public class ChartsService {
     return selector.apply(columns);
   }
 
-  private double[] TransformSelectToDoubleArray(String[][] result){
+  private double[] transformSelectToDoubleArray(String[][] result){
     return Arrays.stream(result).flatMap(Arrays::stream).mapToDouble(Double::valueOf).toArray();
   }
 
-  private static void createChart(double[][] data) throws IOException {
-    HistogramDataset dataset = new HistogramDataset();
-    dataset.addSeries("Racial", data[0], 1);
-    dataset.addSeries("Economico", data[1], 1);
-    dataset.addSeries("Territorial", data[2], 1);
-    dataset.addSeries("Religioso", data[3], 1);
-
-    JFreeChart histogram = ChartFactory.createHistogram("Tipo de conflito e Número de conflitos",
-        "y values", "x values", dataset);
-
-    ChartUtils.saveChartAsPNG(new File("./histograma.png"), histogram, 600, 400);
+  private static DefaultCategoryDataset createDataSet(double[] data) {
+    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    for (int i = 0; i < data.length; i++) {
+      dataset.addValue(data[i], columns[i], "");
+    }
+    return dataset;
   }
+
+//    try{
+//      ChartUtils.saveChartAsPNG(new File(fileName), barChart, 900, 600);
+//      System.out.println("\nHistograma gerado na pasta raiz do programa: " + fileName);
+//
+//    }
+//    catch (IOException e){
+//      System.out.println(e);
+//    }
+//  }
 
 
 }
