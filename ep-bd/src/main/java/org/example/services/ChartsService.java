@@ -1,17 +1,12 @@
 package org.example.services;
 
 import org.example.services.graphic.BarChart;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.springframework.stereotype.Component;
 import lombok.AllArgsConstructor;
 import org.example.repository.WarConflictRepository;
 import java.util.Arrays;
 import java.util.function.Function;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
 import javax.swing.*;
 
 @Component
@@ -19,7 +14,6 @@ import javax.swing.*;
 public class ChartsService{
 
   private static final String[] columns = {"Religioso", "Territorial", "Economico", "Racial"};
-  private static final String fileName= "./histograma.png";
   private static final String title = "Números de Conflitpos X Tipo de Conflito";
   private static final String categoryLabel = "Tipo de Conflito";
   private static final String valueLabel= "Número de Conflitos";
