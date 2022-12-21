@@ -17,6 +17,42 @@ public class WarConflictSelectionRepository {
 
   private final Connection connection;
 
+
+//  public String[][] selectCountRacialConflicts(String[] columns){
+//    return select("""
+//        select count(*) as racial from racial;
+//        """, columns);
+//  }
+//
+//  public String[][] selectCountEconomicConflicts(String[] columns){
+//    return select("""
+//        select count(*) as economico from economico;
+//        """, columns);
+//  }
+//
+//  public String[][] selectCountTerritorialConflicts(String[] columns){
+//    return select("""
+//        select count(*) as territorial from territorial;
+//        """, columns);
+//  }
+
+  public String[][] selectConflictTypeVsNumberOfConflicts(String[] columns) {
+    return select("""
+        select *
+        from (select count(*) as "Religioso" from conflito where flag_religioso = true) as religioso,
+             (select count(*) as "Racial" from conflito where flag_racial = true) as racial,
+             (select count(*) as "Territorial" from conflito where flag_territorial = true) as territorial,
+             (select count(*) as "Economico" from conflito where flag_economico = true) as economico;
+        """, columns);
+  }
+
+  public String[][] selectCountReligiousConflicts(String[] columns){
+    return select("""
+        select count(*) as religioso from  religioso;
+        """, columns);
+  }
+
+
   public String[][] selectDealersAndArmedGroups(String[] columns) {
     return select("""
         select nome_traficante as "Nome Traficante", grupo_armado.nome as "Nome Grupo Armado", nome_tipo_arma as "Nome Arma"

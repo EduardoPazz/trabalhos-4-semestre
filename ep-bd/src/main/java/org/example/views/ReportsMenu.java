@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.example.services.ChartsService;
 import org.example.services.ReportsService;
 import org.springframework.stereotype.Component;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,7 +17,7 @@ class ReportsMenu {
   private final ChartsService chartsService;
   private final ReportsService reportsService;
 
-  void run() {
+  void run(){
     reportsMenuWhile:
     while (true) {
       String chosenOption = getValidInputWithOptions(scanner, """
