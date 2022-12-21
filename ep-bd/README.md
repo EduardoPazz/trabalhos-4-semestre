@@ -23,12 +23,12 @@
 <!-- TOC -->
 
 ## Alunos
-| Nome                      | NUSP     |
-|---------------------------|----------|
-| João Eduardo da Paz Silva | 11845514 |
-| Ryan                      ||
-| Vinicius                  ||
-| Silas                     ||
+| Nome                                   | NUSP     |
+|----------------------------------------|----------|
+| João Eduardo da Paz Silva              | 11845514 |
+| Ryan Alexandre Forti                   | 12693264 |
+| Silas Bovolin Reis                     | 11796739 |
+| Vinicius Alexandre de Oliveira Zevarex | 12692197 |
 
 ## Como executar
 
@@ -85,6 +85,7 @@ O projeto irá configurar e popular o banco de dados apenas na primeira execuç�
 ### 2 - A Aplicação
 - [x] 2.a: Através das classes `org.example.views.Registration*`, `org.example.services.RegistrationService` e `org.example.repository.WarConflictInsertionRepository`;
 - [x] 2.b: Através das classes `org.example.views.ReportsMenu`, `org.example.services.ReportsService`, `org.example.services.ChartsService` e `org.example.repository.WarConflictSelectionRepository`;
+  - **Alerta de Bug**: por algum motivo desconhecido, ao gerar a imagem do gráfico requisitado em 2.b.i, a aplicação se encerra sozinha. Pedimos desculpas pelo inconveniente. Caso o bug ocorra, basta reiniciar a aplicação com o comando `java -jar ...` já mencionado.
 
 ### Dados de teste necessários para o cadastro de novos registros:
 
