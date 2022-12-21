@@ -17,25 +17,6 @@ public class WarConflictSelectionRepository {
 
   private final Connection connection;
 
-
-//  public String[][] selectCountRacialConflicts(String[] columns){
-//    return select("""
-//        select count(*) as racial from racial;
-//        """, columns);
-//  }
-//
-//  public String[][] selectCountEconomicConflicts(String[] columns){
-//    return select("""
-//        select count(*) as economico from economico;
-//        """, columns);
-//  }
-//
-//  public String[][] selectCountTerritorialConflicts(String[] columns){
-//    return select("""
-//        select count(*) as territorial from territorial;
-//        """, columns);
-//  }
-
   public String[][] selectConflictTypeVsNumberOfConflicts(String[] columns) {
     return select("""
         select *
@@ -45,13 +26,6 @@ public class WarConflictSelectionRepository {
              (select count(*) as "Economico" from conflito where flag_economico = true) as economico;
         """, columns);
   }
-
-  public String[][] selectCountReligiousConflicts(String[] columns){
-    return select("""
-        select count(*) as religioso from  religioso;
-        """, columns);
-  }
-
 
   public String[][] selectDealersAndArmedGroups(String[] columns) {
     return select("""
